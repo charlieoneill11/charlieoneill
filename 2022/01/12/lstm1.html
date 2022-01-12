@@ -1,0 +1,420 @@
+<h1 id="pytorch-lstms-for-time-series-data">Pytorch LSTMs for time-series data</h1>
+<h2 id="using-the-pytorch-functional-api-to-build-temporal-models-for-univariate-timeseries"><em>Using the Pytorch functional API to build temporal models for univariate time series</em></h2>
+
+<h2 id="introduction">Introduction</h2>
+<p>You might have noticed that, despite the frequency with which we encounter sequential data in the real world, there isn’t a huge amount of content online showing how to build simple LSTMs from the ground up using the Pytorch functional API. Even the LSTM example on Pytorch’s official documentation only applies it to a natural language problem, which can be disorienting when trying to get these recurrent models working on time series data. In this article, we’ll set a solid foundation for constructing an end-to-end LSTM, from tensor input and output shapes to the LSTM itself. </p>
+
+<p>This article is structured with the goal of being able to implement any univariate time-series LSTM. We begin by examining the shortcomings of traditional neural networks for these tasks, and why an LSTM’s input is differently shaped to simple neural nets. We’ll then intuitively describe the mechanics that allow an LSTM to “remember.” With this approximate understanding, we can implement a Pytorch LSTM using a traditional model class structure inheriting from <code class="language-plaintext highlighter-rouge">nn.Module</code>, and write a forward method for it. We use this to see if we can get the LSTM to learn a simple sine wave. Finally, we attempt to write code to generalise how we might initialise an LSTM based on the problem at hand, and test it on our previous examples.</p>
+
+<h2 id="simplest-possible-neural-network">Simplest possible neural network</h2>
+<p>Let’s suppose we have the following time-series data. Rather than using complicated recurrent models, we’re going to treat the time series as a simple input-output function: the input is the time, and the output is the value of whatever dependent variable we’re measuring. This is essentially just simplifying a univariate time series.</p>
+
+<blockquote>
+  <p>You might be wondering there’s any difference between the problem we’ve outlined above, and an actual sequential modelling approach to time series problems (as used in LSTMs). The difference is in the recurrency of the solution. Here, we’re simply passing in the current time step and hoping the network can output the function value. However, in recurrent neural networks, we not only pass in the current input, but also previous outputs. In this way, the network can learn dependencies between previous function values and the current one. Here, the network has no way of learning these dependencies, because we simply don’t input previous outputs into the model.</p>
+</blockquote>
+
+<p>Let’s suppose that we’re trying to model the number of minutes Klay Thompson will play in his return from injury. Steve Kerr, the coach of the Golden State Warriors, doesn’t want Klay to come back and immediately play heavy minutes. Instead, he will start Klay with a few minutes per game, and ramp up the amount of time he’s allowed to play as the season goes on. We’re going to be Klay Thompson’s physio, and we need to predict how many minutes per game Klay will be playing in order to determine how much strapping to put on his knee. </p>
+
+<p>Thus, the number of games since returning from injury (representing the input time step) is the independent variable, and Klay Thompson’s number of minutes in the game is the dependent variable. Suppose we observe Klay for 11 games, recording his minutes per game in each outing to get the following data.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.6</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+
+<span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+ <span class="p">[</span><span class="mf">8.059610387807004</span><span class="p">,</span>
+  <span class="mf">11.05288064074008</span><span class="p">,</span>
+  <span class="mf">11.353963162111054</span><span class="p">,</span>
+  <span class="mf">13.816355592580631</span><span class="p">,</span>
+  <span class="mf">14.13887152857681</span><span class="p">,</span>
+  <span class="mf">15.694474605527</span><span class="p">,</span>
+  <span class="mf">15.684278885945714</span><span class="p">,</span>
+  <span class="mf">15.532815595076784</span><span class="p">,</span>
+  <span class="mf">18.247200671926283</span><span class="p">,</span>
+  <span class="mf">20.520472619447048</span><span class="p">,</span>
+  <span class="mf">20.127253834627</span><span class="p">])</span>
+</code></pre></div></div>
+<p>Here, we’ve generated the minutes per game as a linear relationship with the number of games since returning. We’re going to use 9 samples for our training set, and 2 samples for validation.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X_train</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span>
+<span class="n">X_val</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+<span class="n">y_val</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+</code></pre></div></div>
+<p>We know that the relationship between game number and minutes is linear. However, we’re still going to use a non-linear activation function, because that’s the whole point of a neural network. (Otherwise, this would just turn into linear regression: the composition of linear operations is just a linear operation.) As per usual, we use nn.Sequential to build our model with one hidden layer, with 13 hidden neurons.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">seq_model</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Tanh</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">seq_model</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Sequential</span><span class="p">(</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">):</span> <span class="n">Tanh</span><span class="p">()</span>
+  <span class="p">(</span><span class="mi">2</span><span class="p">):</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>We now need to write a training loop, as we always do when using gradient descent and backpropagation to force a network to learn. To remind you, each training step has several key tasks:</p>
+<ol>
+  <li>Compute the forward pass through the network by applying the model to the training examples.</li>
+  <li>Calculate the loss based on the defined loss function, which compares the model output to the actual training labels.</li>
+  <li>Backpropagate the derivative of the loss with respect to the model parameters through the network. This is done with call <code class="language-plaintext highlighter-rouge">.backward()</code> on the loss, after setting the current parameter gradients to zero with <code class="language-plaintext highlighter-rouge">.zero_grad()</code>.</li>
+  <li>Update the model parameters by subtracting the gradient times the learning rate. This is done with our optimiser, using <code class="language-plaintext highlighter-rouge">optimiser.step()</code>.</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">training_loop</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span>  <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">output_train</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span> <span class="c1"># forwards pass
+</span>        <span class="n">loss_train</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="c1"># calculate loss
+</span>        <span class="n">output_val</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X_val</span><span class="p">)</span> 
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span>
+        
+        <span class="n">optimiser</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span> <span class="c1"># set gradients to zero
+</span>        <span class="n">loss_train</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span> <span class="c1"># backwards pass
+</span>        <span class="n">optimiser</span><span class="p">.</span><span class="n">step</span><span class="p">()</span> <span class="c1"># update model parameters
+</span>        <span class="k">if</span> <span class="n">epoch</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s">, Training loss </span><span class="si">{</span><span class="n">loss_train</span><span class="p">.</span><span class="n">item</span><span class="p">():.</span><span class="mi">4</span><span class="n">f</span><span class="si">}</span><span class="s">,"</span>
+                  <span class="sa">f</span><span class="s">" Validation loss </span><span class="si">{</span><span class="n">loss_val</span><span class="p">.</span><span class="n">item</span><span class="p">():.</span><span class="mi">4</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Now, all we need to do is instantiate the required objects, including our model, our optimiser, our loss function and the number of epochs we’re going to train for.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">optimiser</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">seq_model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">training_loop</span><span class="p">(</span>
+    <span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">500000</span><span class="p">,</span> 
+    <span class="n">optimiser</span> <span class="o">=</span> <span class="n">optimiser</span><span class="p">,</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">seq_model</span><span class="p">,</span>
+    <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">(),</span>
+    <span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">,</span>
+    <span class="n">X_val</span> <span class="o">=</span> <span class="n">X_val</span><span class="p">,</span> 
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">y_val</span> <span class="o">=</span> <span class="n">y_val</span><span class="p">)</span>
+    
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Epoch</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Training</span> <span class="n">loss</span> <span class="mf">422.8955</span><span class="p">,</span> <span class="n">Validation</span> <span class="n">loss</span> <span class="mf">372.3910</span>
+    <span class="p">...</span>
+    <span class="n">Epoch</span> <span class="mi">500000</span><span class="p">,</span> <span class="n">Training</span> <span class="n">loss</span> <span class="mf">0.0007</span><span class="p">,</span> <span class="n">Validation</span> <span class="n">loss</span> <span class="mf">299.8014</span>
+</code></pre></div></div>
+
+<p>As we can see, the model is likely overfitting significantly (which could be solved with many techniques, such as regularisation, or lowering the number of model parameters, or enforcing a linear model form). The training loss is essentially zero. Due to the inherent random variation in our dependent variable, the minutes played taper off into a flat curve towards the last few games, leading the model to believes that the relationship more resembles a log rather than a straight line.</p>
+
+<p><img src="/images/overfitting.png" alt="" title="The crosses represent our predictions after training the neural net for 50,000 epochs. The blue dots represent the actual data points (minutes played)." /></p>
+
+<p>Although it wasn’t very successful, this initial neural network is a proof-of-concept that we can just develop sequential models out of nothing more than inputting all the time steps together. However, without more information about the past, and without the ability to store and recall this information, model performance on sequential data will be extremely limited.</p>
+
+<h2 id="intuition-behindlstms">Intuition behind LSTMs</h2>
+<p>The simplest neural networks make the assumption that the relationship between the input and output is independent of previous output states. It assumes that the function shape can be learnt from the input alone. In cases such as sequential data, this assumption is not true. The function value at any one particular time step can be thought of as directly influenced by the function value at past time steps. There is a temporal dependency between such values. Long-short term memory networks, or LSTMs, are a form of recurrent neural network that are excellent at learning such temporal dependencies.</p>
+
+<p>The key to LSTMs is the cell state, which allows information to flow from one cell to another. This represents the LSTM’s memory, which can be updated, altered or forgotten over time. The components of the LSTM that do this updating are called gates, which regulate the information contained by the cell. Gates can be viewed as combinations of neural network layers and pointwise operations.</p>
+
+<p>If you don’t already know how LSTMs work, the maths is straightforward and the fundamental LSTM equations are available in the Pytorch docs. There are many great resources online, such as this one. As a quick refresher, here are the four main steps each LSTM cell undertakes:</p>
+<ol>
+  <li><em>Decide what information to remove from the cell state that is no longer relevant.</em> This is controlled by a neural network layer (with a sigmoid activation function) called the forget gate. We feed the output of the previous cell into the forget gate, which in turn outputs a number between 0 and 1 determining how much or little to forget. </li>
+  <li><em>Update the cell state with new information.</em> An NN layer called the input gate takes the concatenation of the previous cell’s output and the current input and decides what to update. A tanh layer takes the same concatenation and creates a vector of new candidate values  that could be added to the state. </li>
+  <li><em>Update the old cell state to create a new cell state.</em> We multiply the old state by the value determined in Step 1, forgetting the things we decided to forget earlier. Then we add the new candidate values we found in Step 2. These constitute the new cell state, scaled by how much we decided to update each state value. This is finished for this cell; we can pass this directly to the next cell in the model.</li>
+  <li><em>Generate the model output based on the previous output and the current input.</em> First, we take our updated cell state and pass it through an NN layer. We then find the output of the output/input vector passed through the sigmoid layer, and then pointwise compose it with the modified cell state. This allows the cell full control over composing the cell state and the current cell inputs, which gives us an appropriate output.</li>
+</ol>
+
+<p><img src="/images/lstm_diagram.jpeg" alt="" title="A simple representation of a single LSTM cell. The yellow boxes show neural network layers - in contrast to regular RNNs, we have four in each cell, all interacting in a highly specified manner." /></p>
+
+<p>Note that we give the output twice in the diagram above. One of these outputs is to be stored as a model prediction, for plotting etc. The other is passed to the next LSTM cell, much as the updated cell state is passed to the next LSTM cell.</p>
+
+<h2 id="pytorch-lstm">Pytorch LSTM</h2>
+<p>Our problem is to see if an LSTM can “learn” a sine wave. This is actually a relatively famous (read: infamous) example in the Pytorch community. It’s the only example on <a href="https://github.com/pytorch/examples">Pytorch’s Examples Github repository</a> of an LSTM for a time-series problem. However, the example is old, and most people find that the code either doesn’t compile for them, or won’t converge to any sensible output. (A quick Google search gives a litany of Stack Overflow issues and questions just on this example.) Here, we’re going to break down and alter their code step by step.</p>
+
+<h3 id="generating-the-data">Generating the data</h3>
+<p>We begin by generating a sample of 100 different sine waves, each with the same frequency and amplitude but beginning at slightly different points on the x-axis.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of samples
+</span><span class="n">L</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># length of each sample (number of values for each sine wave)
+</span><span class="n">T</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1"># width of the wave
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span><span class="n">L</span><span class="p">),</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># instantiate empty array
+</span><span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mf">1.0</span><span class="o">/</span><span class="n">T</span><span class="p">).</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Let’s walk through the code above. <em>N</em> is the number of samples; that is, we are generating 100 different sine waves. Many people intuitively trip up at this point. Since we are used to training a neural network on individual data points, such as the simple Klay Thompson example from above, it is tempting to think of <em>N</em> here as the number of points at which we measure the sine function. This is wrong; we are generating <em>N</em> different sine waves, each with a multitude of points. The LSTM network learns by examining not one sine wave, but many.</p>
+
+<p>Next, we instantiate an empty array <code class="language-plaintext highlighter-rouge">x</code>. Think of this array as a sample of points along the <em>x</em>-axis. The array has 100 rows (representing the 100 different sine waves), and each row is 1000 elements long (representing <em>L</em>, or the granularity of the sine wave i.e. the number of distinct sampled points in each wave). We then fill <code class="language-plaintext highlighter-rouge">x</code> by sampling the first 1000 integers points and then adding a random integer in a certain range governed by <em>T</em>, where <code class="language-plaintext highlighter-rouge">x[:]</code> is just syntax to add the integer along rows. Note that we must reshape this second random integer to shape <code class="language-plaintext highlighter-rouge">(N, 1)</code> in order for Numpy to be able to broadcast it to each row of <code class="language-plaintext highlighter-rouge">x</code>. 
+Finally, we simply apply the Numpy sine function to <code class="language-plaintext highlighter-rouge">x</code>, and let broadcasting apply the function to each sample in each row, creating one sine wave per row. We cast it to type <code class="language-plaintext highlighter-rouge">float32</code>. We can pick any individual sine wave and plot it using Matplotlib. Let’s pick the first sampled sine wave at index 0.</p>
+
+<p><img src="/images/sine_wave.png" alt="" title="One of the 100 generated sine waves that will be used in our LSTM model. Each of the sine waves has 1000 sampled points, and we have used the sine function to turn these points into a wave (Image by author). " /></p>
+
+<p>To build the LSTM model, we actually only have one nn module being called for the LSTM cell specifically. First, we’ll present the entire model class (inheriting from <code class="language-plaintext highlighter-rouge">nn.Module</code>, as always), and then walk through it piece by piece.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_layers</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span> <span class="o">=</span> <span class="n">hidden_layers</span>
+        <span class="c1"># lstm1, lstm2, linear are all layers in the network
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">lstm1</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LSTMCell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">lstm2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LSTMCell</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">future_preds</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">outputs</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">y</span><span class="p">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">h_t</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">c_t</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">h_t2</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">c_t2</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">time_step</span> <span class="ow">in</span> <span class="n">y</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># N, 1
+</span>            <span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lstm1</span><span class="p">(</span><span class="n">input_t</span><span class="p">,</span> <span class="p">(</span><span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span><span class="p">))</span> <span class="c1"># initial hidden and cell states
+</span>            <span class="n">h_t2</span><span class="p">,</span> <span class="n">c_t2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lstm2</span><span class="p">(</span><span class="n">h_t</span><span class="p">,</span> <span class="p">(</span><span class="n">h_t2</span><span class="p">,</span> <span class="n">c_t2</span><span class="p">))</span> <span class="c1"># new hidden and cell states
+</span>            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">h_t2</span><span class="p">)</span> <span class="c1"># output from the last FC layer
+</span>            <span class="n">outputs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">future_preds</span><span class="p">):</span>
+            <span class="c1"># this only generates future predictions if we pass in future_preds&gt;0
+</span>            <span class="c1"># mirrors the code above, using last output/prediction as input
+</span>            <span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lstm1</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span><span class="p">))</span>
+            <span class="n">h_t2</span><span class="p">,</span> <span class="n">c_t2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lstm2</span><span class="p">(</span><span class="n">h_t</span><span class="p">,</span> <span class="p">(</span><span class="n">h_t2</span><span class="p">,</span> <span class="n">c_t2</span><span class="p">))</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">h_t2</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="c1"># transform list to tensor    
+</span>        <span class="n">outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">outputs</span>
+</code></pre></div></div>
+
+<h3 id="initialisation">Initialisation</h3>
+<p>The key step in the initialisation is the declaration of a Pytorch LSTMCell. You can find the documentation here. The cell has three main parameters:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">input_size</code>: the number of expected features in the input <code class="language-plaintext highlighter-rouge">x</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">hidden_size</code>: the number of features in the hidden state <code class="language-plaintext highlighter-rouge">h</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">bias</code>: this defaults to true, and in general we leave it that way.</li>
+</ul>
+
+<blockquote>
+  <p>Some of you may be aware of a separate <code class="language-plaintext highlighter-rouge">torch.nn</code> class called <code class="language-plaintext highlighter-rouge">LSTM</code>. The distinction between the two is not really relevant here, but just know that <code class="language-plaintext highlighter-rouge">LSTMCell</code> is more flexible when it comes to defining our own models from scratch using the functional API.</p>
+</blockquote>
+
+<p>Keep in mind that the parameters of the LSTM cell are different from the inputs. The parameters here largely govern the shape of the expected inputs, so that Pytorch can set up the appropriate structure. The inputs are the actual training examples or prediction examples we feed into the cell.
+We define two LSTM layers using two LSTM cells. Much like a convolutional neural network, the key to setting up input and hidden sizes lies in the way the two layers connect to each other. For the first LSTM cell, we pass in an input of size 1. Recall why this is so: in an LSTM, we don’t need to pass in a sliced array of inputs. We don’t need a sliding window over the data, as the memory and forget gates take care of the cell state for us. We don’t need to specifically hand feed the model with old data each time, because of the model’s ability to recall this information. This is what makes LSTMs so special.</p>
+
+<p>We then give this first LSTM cell a hidden size governed by the variable when we declare our class, <code class="language-plaintext highlighter-rouge">n_hidden</code>. This number is rather arbitrary; here, we pick 64. As mentioned above, this becomes an output of sorts which we pass to the next LSTM cell, much like in a CNN: the output size of the last step becomes the input size of the next step. In this cell, we thus have an input of size <code class="language-plaintext highlighter-rouge">hidden_size</code>, and also a hidden layer of size <code class="language-plaintext highlighter-rouge">hidden_size</code>. We then pass this output of size <code class="language-plaintext highlighter-rouge">hidden_size</code> to a linear layer, which itself outputs a scalar of size one. We are outputting a scalar, because we are simply trying to predict the function value <code class="language-plaintext highlighter-rouge">y</code> at that particular time step.</p>
+
+<blockquote>
+  <p>One of the most important things to keep in mind at this stage of constructing the model is the input and output size: what am I mapping from and to?</p>
+</blockquote>
+
+<h3 id="forward-method">Forward method</h3>
+<p>In the forward method, once the individual layers of the LSTM have been instantiated with the correct sizes, we can begin to focus on the actual inputs moving through the network. An LSTM cell takes the following inputs: <code class="language-plaintext highlighter-rouge">input, (h_0, c_0)</code>.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">input</code>: a tensor of inputs of shape (batch, input_size), where we declared input_size in the creation of the LSTM cell.</li>
+  <li><code class="language-plaintext highlighter-rouge">h_0</code>: a tensor containing the initial hidden state for each element in the batch, of shape (batch, hidden_size).</li>
+  <li><code class="language-plaintext highlighter-rouge">c_0</code>: a tensor containing the initial cell state for each element in the batch, of shape (batch, hidden_size).</li>
+</ul>
+
+<p>To link the two LSTM cells (and the second LSTM cell with the linear, fully-connected layer), we also need to know what an LSTM cell actually outputs: a tensor of shape <code class="language-plaintext highlighter-rouge">(h_1, c_1)</code>.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">h_0</code>: a tensor containing the next hidden state for each element in the batch, of shape (batch, hidden_size).</li>
+  <li><code class="language-plaintext highlighter-rouge">c_0</code>: a tensor containing the next cell state for each element in the batch, of shape (batch, hidden_size).</li>
+</ul>
+
+<p>Here, our batch size is 100, which is given by the first dimension of our input; hence, we take <code class="language-plaintext highlighter-rouge">n_samples = x.size(0)</code>. Since we know the shapes of the hidden and cell states are both <code class="language-plaintext highlighter-rouge">(batch, hidden_size)</code>, we can instantiate a tensor of zeros of this size, and do so for both of our LSTM cells.</p>
+
+<p>The next step is arguably the most difficult. We must feed in an appropriately shaped tensor. Here, that would be a tensor of <em>m</em> points, where <em>m</em> is our training size on each sequence. However, in the Pytorch <code class="language-plaintext highlighter-rouge">split()</code> method (documentation here), if the parameter <code class="language-plaintext highlighter-rouge">split_size_or_sections</code> is not passed in, it will simply split each tensor into chunks of size 1. We want to split this along each individual batch, so our dimension will be the rows, which is equivalent to dimension 1.</p>
+
+<p>It’s always a good idea to check the output shape when we’re vectorising an array in this way. Suppose we choose three sine curves for the test set, and use the rest for training. We can check what our training input will look like in our split method:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">torch</span><span class="p">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">97</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>So, for each sample, we’re passing in an array of 97 inputs, with an extra dimension to represent that it comes from a batch. (Pytorch usually operates in this way. Even if we’re passing in a single image to the world’s simplest CNN, Pytorch expects a batch of images, and so we have to use <code class="language-plaintext highlighter-rouge">unsqueeze()</code>.) We then output a new hidden and cell state. As we know from above, the hidden state output is used as input to the next LSTM cell. The hidden state output from the second cell is then passed to the linear layer.</p>
+
+<p>Great - we’ve completed our model predictions based on the actual points we have data for. But the whole point of an LSTM is to predict the future shape of the curve, based on past outputs. So, in the next stage of the forward pass, we’re going to predict the next future time steps. Recall that in the previous loop, we calculated the output to append to our outputs array by passing the second LSTM output through a linear layer. This variable is still in operation - we can access it and pass it to our model again. This is good news, as we can predict the next time step in the future, one time step after the last point we have data for. The model takes its prediction for this final data point as input, and predicts the next data point.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">h_t2</span><span class="p">)</span>
+<span class="p">....</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">future_preds</span><span class="p">):</span>
+    <span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lstm1</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">h_t</span><span class="p">,</span> <span class="n">c_t</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We then do this again, with the prediction now being fed as input to the model. In total, we do this future number of times, to produce a curve of length <code class="language-plaintext highlighter-rouge">future_preds</code>, in addition to the 1000 predictions we’ve already made on the 1000 points we actually have data for.</p>
+
+<p>The last thing we do is concatenate the array of scalar tensors representing our outputs, before returning them. That’s it! We’ve built an LSTM which takes in a certain number of inputs, and, one by one, predicts a certain number of time steps into the future.</p>
+
+<h3 id="training-the-model">Training the model</h3>
+<p>Defining a training loop in Pytorch is quite homogeneous across a variety of common applications. However, in our case, we can’t really gain an intuitive understanding of how the model is converging by examining the loss. Yes, a low loss is good, but there’s been plenty of times when I’ve gone to look at the model outputs after achieving a low loss and seen absolute garbage predictions. This is usually due to a mistake in my plotting code, or even more likely a mistake in my model declaration. Thus, the most useful tool we can apply to model assessment and debugging is plotting the model predictions at each training step to see if they improve.</p>
+
+<p>Our first step is to figure out the shape of our inputs and our targets. We know that our data y has the shape (100, 1000). That is, 100 different sine curves of 1000 points each. Next, we want to figure out what our train-test split is. We’ll save 3 curves for the test set, and so indexing along the first dimension of <code class="language-plaintext highlighter-rouge">y</code> we can use the last 97 curves for the training set.</p>
+
+<p>Now comes time to think about our model input. One at a time, we want to input the last time step and get a new time step prediction out. To do this, we input the first 999 samples from each sine wave, because inputting the last 1000 would lead to predicting the 1001st time step, which we can’t validate because we don’t have data on it. Similarly, for the training target, we use the first 97 sine waves, and start at the 2nd sample in each wave and use the last 999 samples from each wave; this is because we need a previous time step to actually input to the model - we can’t input nothing. Hence, the starting index for the target in the second dimension (representing the samples in each wave) is 1. This gives us two arrays of shape (97, 999).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># y = (100, 1000)
+</span><span class="n">train_input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># (97, 999)
+</span><span class="n">train_target</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:])</span> <span class="c1"># (97, 999)
+</span></code></pre></div></div>
+
+<p>The test input and test target follow very similar reasoning, except this time, we index only the first three sine waves along the first dimension. Everything else is exactly the same, as we would expect: apart from the batch input size (97 vs 3) we need to have the same input and outputs for train and test sets.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># (3, 999)
+</span><span class="n">test_target</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span> <span class="c1"># (3, 999)
+</span></code></pre></div></div>
+
+<p>We now need to instantiate the main components of our training loop: the model itself, the loss function, and the optimiser. The model is simply an instance of our LSTM class, and the loss function we will use for what amounts to a regression problem is <code class="language-plaintext highlighter-rouge">nn.MSELoss()</code>. The only thing different to normal here is our optimiser. Instead of Adam, we will use what is called a limited-memory BFGS algorithm, which essentially boils down to estimating an inverse of the Hessian matrix as a guide through the variable space. You don’t need to worry about the specifics, but you do need to worry about the difference between <code class="language-plaintext highlighter-rouge">optim.LBFGS</code> and other optimisers. We’ll cover that in the training loop below.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">()</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="n">optimiser</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">LBFGS</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.08</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>You might be wondering why we’re bothering to switch from a standard optimiser like Adam to this relatively unknown algorithm. An LBFGS solver is a quasi-Newton method which uses the inverse of the Hessian to estimate the curvature of the parameter space. In sequential problems, the parameter space is characterised by an abundance of long, flat valleys, which means that the LBFGS algorithm often outperforms other methods such as Adam, particularly when there is not a huge amount of data.</p>
+</blockquote>
+
+<p>Finally, we get around to constructing the training loop. Fair warning, as much as I’ll try to make this look like a typical Pytorch training loop, there will be some differences. These are mainly in the function we have to pass to the optimiser, <code class="language-plaintext highlighter-rouge">closure</code>, which represents the typical forward and backward pass through the network. We update the weights with <code class="language-plaintext highlighter-rouge">optimiser.step()</code> by passing in this function. <a href="https://pytorch.org/docs/1.9.1/generated/torch.optim.LBFGS.html">According to Pytorch</a>, the function closure is a callable that reevaluates the model (forward pass), and returns the loss. So this is exactly what we do.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">training_loop</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> 
+                  <span class="n">train_input</span><span class="p">,</span> <span class="n">train_target</span><span class="p">,</span> <span class="n">test_input</span><span class="p">,</span> <span class="n">test_target</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+            <span class="n">optimiser</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_input</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">train_target</span><span class="p">)</span>
+            <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">loss</span>
+        <span class="n">optimiser</span><span class="p">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="mi">1000</span>
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="n">future</span><span class="p">)</span>
+            <span class="c1"># use all pred samples, but only go to 999
+</span>            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">pred</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="n">future</span><span class="p">],</span> <span class="n">test_target</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">pred</span><span class="p">.</span><span class="n">detach</span><span class="p">().</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="c1"># draw figures
+</span>        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s">"Step </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"x"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"y"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">train_input</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># 999
+</span>        <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">colour</span><span class="p">):</span>
+            <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">yi</span><span class="p">[:</span><span class="n">n</span><span class="p">],</span> <span class="n">colour</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="n">future</span><span class="p">),</span> <span class="n">yi</span><span class="p">[</span><span class="n">n</span><span class="p">:],</span> <span class="n">colour</span><span class="o">+</span><span class="s">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">draw</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">'r'</span><span class="p">)</span>
+        <span class="n">draw</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">'b'</span><span class="p">)</span>
+        <span class="n">draw</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">'g'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">"predict%d.png"</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># print the loss
+</span>        <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_input</span><span class="p">)</span>
+        <span class="n">loss_print</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">train_target</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Step: {}, Loss: {}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">loss_print</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>The training loop starts out much as other garden-variety training loops do. However, notice that the typical steps of forward and backwards pass are captured in the function <code class="language-plaintext highlighter-rouge">closure</code>. This is just an idiosyncrasy of how the optimiser function is designed in Pytorch. We return the loss in closure, and then pass this function to the optimiser during <code class="language-plaintext highlighter-rouge">optimiser.step()</code>. And that’s pretty much it for the training step.</p>
+
+<p>Next, we want to plot some predictions, so we can sanity-check our results as we go. To do this, we need to take the test input, and pass it through the model. This is where our future parameter we included in the model itself is going to come in handy. Recall that passing in some non-negative integer future to the forward pass through the model will give us future predictions after the last output from the actual samples. This allows us to see if the model generalises into future time steps. We then detach this output from the current computational graph and store it as a numpy array.</p>
+
+<p>Finally, we write some simple code to plot the model’s predictions on the test set at each epoch. There are only three test sine curves, so we only need to call our draw function three times (we’ll draw each curve in a different colour). The plotted lines indicate future predictions, and the solid lines indicate predictions in the current range of the data.</p>
+
+<p><img src="/images/step_one.png" alt="" /></p>
+
+<p><img src="/images/step_2.png" alt="" /></p>
+
+<p><img src="/images/step_3.png" alt="" /></p>
+
+<p><img src="/images/step_4.png" alt="" /></p>
+
+<p><img src="/images/step_6.png" alt="" /></p>
+
+<p><img src="/images/step_7.png" alt="" /></p>
+
+<p><img src="/images/step_8.png" alt="" /></p>
+
+<p>The predictions clearly improve over time, as well as the loss going down. Our model works: by the 8th epoch, the model has learnt the sine wave. However, if you keep training the model, you might see the predictions start to do something funny. This is because, at each time step, the LSTM relies on outputs from the previous time step. If the prediction changes slightly for the 1001st prediction, this will perturb the predictions all the way up to prediction 2000, resulting in a nonsensical curve. There are many ways to counter this, but they are beyond the scope of this article. The best strategy right now would be to watch the plots to see if this error accumulation starts happening. Then, you can either go back to an earlier epoch, or train past it and see what happens.</p>
+
+<p><img src="/images/step_10.png" alt="" /></p>
+
+<p>If you’re having trouble getting your LSTM to converge, here’s a few things you can try:</p>
+<ul>
+  <li>Lower the number of model parameters (maybe even down to 15) by changing the size of the hidden layer. This reduces the model search space.</li>
+  <li>Try downsampling from the first LSTM cell to the second by reducing the <code class="language-plaintext highlighter-rouge">hidden_size</code> passed to the second cell. You could also do this from the second LSTM cell to the linear fully-connected layer.</li>
+  <li>Add batchnorm regularisation, which limits the size of the weights by placing penalties on larger weight values, giving the loss a smoother topography.</li>
+  <li>Add dropout, which zeros out a random fraction of neuronal outputs across the whole model at each epoch. This generates slightly different models each time, meaning the model is forced to rely on individual neurons less.</li>
+</ul>
+
+<p>If you implement the last two strategies, remember to call <code class="language-plaintext highlighter-rouge">model.train()</code> to instantiate the regularisation during training, and turn off the regularisation during prediction and evaluation using <code class="language-plaintext highlighter-rouge">model.eval()</code>.</p>
+
+<h2 id="automating-model-construction">Automating model construction</h2>
+<p>This whole exercise is pointless if we still can’t apply an LSTM to other shapes of input. Let’s generate some new data, except this time, we’ll randomly generate the number of curves and the samples in each curve. We won’t know what the actual values of these parameters are, and so this is a perfect way to see if we can construct an LSTM based on the relationships between input and output shapes.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span> <span class="c1"># number of samples
+</span><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1200</span><span class="p">)</span> <span class="c1"># length of each sample (number of values for each sine wave)
+</span><span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="c1"># width of the wave
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span><span class="n">L</span><span class="p">),</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># instantiate empty array
+</span><span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mf">1.0</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">).</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>We could then change the following input and output shapes by determining the percentage of samples in each curve we’d like to use for the training set.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_prop</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">train_samples</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">train_prop</span><span class="p">)</span> 
+<span class="n">test_samples</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">train_samples</span>
+</code></pre></div></div>
+
+<p>The input and output shapes thus become:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># y = (N, L)
+</span><span class="n">train_input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">test_samples</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># (train_samples, L-1)
+</span><span class="n">train_target</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">test_samples</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:])</span> <span class="c1"># (train_samples, L-1)
+</span><span class="n">test_input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="n">test_samples</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># (train_samples, L-1)
+</span><span class="n">test_target</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="n">test_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span> <span class="c1"># (train_samples, L-1)
+</span></code></pre></div></div>
+
+<p>You can verify that this works by running these inputs and targets through the LSTM (hint: make sure you instantiate a variable for <code class="language-plaintext highlighter-rouge">future_preds</code> based on the length of the input).</p>
+
+<p>Let’s see if we can apply this to the original Klay Thompson example. We need to generate more than one set of minutes if we’re going to feed it to our LSTM. That is, we’re going to generate 100 different hypothetical sets of minutes that Klay Thompson played in 100 different hypothetical worlds. We’ll feed 95 of these in for training, and plot three of the remaining five to see how our model is learning.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of theoretical series of games
+</span><span class="n">L</span> <span class="o">=</span> <span class="mi">11</span> <span class="c1"># number of games in each series
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">empty</span><span class="p">((</span><span class="n">N</span><span class="p">,</span><span class="n">L</span><span class="p">),</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># instantiate empty array
+</span><span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.6</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span><span class="p">).</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="c1"># add some noise
+</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>After using the code above to reshape the inputs and outputs based on <em>L</em> and <em>N</em>, we run the model and achieve the following:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">training_loop</span><span class="p">(</span><span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+              <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">,</span>
+              <span class="n">optimiser</span> <span class="o">=</span> <span class="n">optimiser</span><span class="p">,</span>
+              <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">,</span>
+              <span class="n">L</span> <span class="o">=</span> <span class="n">L</span><span class="p">,</span>
+              <span class="n">train_input</span> <span class="o">=</span> <span class="n">train_input</span><span class="p">,</span>
+              <span class="n">train_target</span> <span class="o">=</span> <span class="n">train_target</span><span class="p">,</span>
+              <span class="n">test_input</span> <span class="o">=</span> <span class="n">test_input</span><span class="p">,</span>
+              <span class="n">test_target</span> <span class="o">=</span> <span class="n">test_target</span><span class="p">)</span>
+
+<span class="n">Step</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">7.279130458831787</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">1.4280033111572266</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.5719900727272034</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.31642651557922363</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.20579740405082703</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.15880005061626434</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.1370033472776413</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.11637765169143677</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.09049651771783829</span>
+<span class="n">Step</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="n">Loss</span><span class="p">:</span> <span class="mf">0.06212589889764786</span>
+</code></pre></div></div>
+
+<p>This gives us the following images (we only show the first and last):</p>
+
+<p><img src="/images/step_1.png" alt="" /></p>
+
+<p><img src="/images/step_ten.png" alt="" /></p>
+
+<p>Very interesting! Initially, the LSTM also thinks the curve is logarithmic. Whilst it figures out that the curve is linear on the first 11 games after a bit of training, it insists on providing a logarithmic curve for future games. What is so fascinating about that is that the LSTM is right - Klay can’t keep linearly increasing his game time, as a basketball game only goes for 48 minutes, and most processes such as this are logarithmic anyway. Obviously, there’s no way that the LSTM could know this, but regardless, it’s interesting to see how the model ends up interpreting our toy data. A future task could be to play around with the hyperparameters of the LSTM to see if it is possible to make it learn a linear function for future time steps as well. Additionally, I like to create a Python class to store all these functions in one spot. Then, you can create an object with the data, and you can write functions which read the shape of the data, and feed it to the appropriate LSTM constructors.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In summary, creating an LSTM for univariate time series data in Pytorch doesn’t need to be overly complicated. However, the lack of available resources online (particularly resources that don’t focus on natural language forms of sequential data) make it difficult to learn how to construct such recurrent models. Hopefully, this article provided guidance on setting up your inputs and targets, writing a Pytorch class for the LSTM forward method, defining a training loop with the quirks of our new optimiser, and debugging using visual tools such as plotting.</p>
+
+<p>If you would like to learn more about the maths behind the LSTM cell, I highly recommend <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/">this article</a> which sets out the fundamental equations of LSTMs beautifully (I have no connection to the author). I also recommend attempting to adapt the above code to multivariate time-series. All the core ideas are the same - you just need to think about how you might expand the dimensionality of the input.</p>
