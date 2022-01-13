@@ -112,7 +112,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      13 min read
     
 </span></p>
 
@@ -178,6 +178,11 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#Some-examples">Some examples </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Timing-decorator">Timing decorator </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Fancy-decorators">Fancy decorators </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Decorating-classes">Decorating classes </a></li>
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#Writing-a-custom-transform-in-fastai-with-decorators">Writing a custom transform in fastai with decorators </a></li>
@@ -1433,6 +1438,238 @@ Creating greeting
 <span class="k">def</span> <span class="nf">waste_some_time</span><span class="p">(</span><span class="n">num_times</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_times</span><span class="p">):</span>
         <span class="nb">sum</span><span class="p">([</span><span class="n">i</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This decorator works by storing the time just before the function starts running (at the line marked # 1) and just after the function finishes (at # 2). The time the function takes is then the difference between the two (at # 3). We use the <code>time.perf_counter()</code> function, which does a good job of measuring time intervals. Here are some examples of timings:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waste_some_time</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Finished 'waste_some_time' in 0.0107 secs
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waste_some_time</span><span class="p">(</span><span class="mi">999</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Finished 'waste_some_time' in 2.3977 secs
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
+<div class="flash">
+    <svg class="octicon octicon-info" viewbox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg>
+    <strong>Note: </strong>The <code>@timer</code> decorator is great if you just want to get an idea about the runtime of your functions. If you want to do more precise measurements of code, you should instead consider the <code>timeit</code> module in the standard library. It temporarily disables garbage collection and runs multiple trials to strip out noise from quick function calls.
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Fancy-decorators">
+<a class="anchor" href="#Fancy-decorators" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fancy decorators<a class="anchor-link" href="#Fancy-decorators"> </a>
+</h2>
+<h3 id="Decorating-classes">
+<a class="anchor" href="#Decorating-classes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Decorating classes<a class="anchor-link" href="#Decorating-classes"> </a>
+</h3>
+<p>There are two different ways you can use decorators on classes. The first one is very close to what you have already done with functions: you can decorate the methods of a class. This was one of the motivations for introducing decorators back in the day.</p>
+<p>Some commonly used decorators that are even built-ins in Python are <code>@classmethod</code>, <code>@staticmethod</code>, and <code>@property</code>. The <code>@classmethod</code> and <code>@staticmethod</code> decorators are used to define methods inside a class namespace that are not connected to a particular instance of that class. The <code>@property</code> decorator is used to customise getters and setters for class attributes.</p>
+<p>The following definition of a <code>Circle</code> class uses the <code>@classmethod</code>, <code>@staticmethod</code>, and <code>@property</code> decorators:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Circle</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">radius</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get value of radius"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span>
+
+    <span class="nd">@radius</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">"""Set radius, raise error if negative"""</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Radius must be positive"</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Calculate area inside circle"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">cylinder_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="sd">"""Calculate volume of cylinder with circle as base"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">*</span> <span class="n">height</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">unit_circle</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">"""Factory method creating a circle with radius 1"""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">pi</span><span class="p">():</span>
+        <span class="sd">"""Value of π, could use math.pi instead though"""</span>
+        <span class="k">return</span> <span class="mf">3.1415926535</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this class:</p>
+<ul>
+<li>
+<code>cylinder_volume()</code> is a regular method.</li>
+<li>
+<code>radius</code> is a mutable property: it can be set to a different value. However, by defining a setter method, we can do some error testing to make sure it’s not set to a nonsensical negative number. Properties are accessed as attributes without parentheses.</li>
+<li>
+<code>area</code> is an immutable property: properties without <code>.setter()</code> methods can’t be changed. Even though it is defined as a method, it can be retrieved as an attribute without parentheses.</li>
+<li>
+<code>unit_circle()</code> is a class method. It’s not bound to one particular instance of <code>Circle</code>. Class methods are often used as factory methods that can create specific instances of the class.</li>
+<li>
+<code>pi()</code> is a static method. It’s not really dependent on the <code>Circle</code> class, except that it is part of its namespace. Static methods can be called on either an instance or the class.</li>
+</ul>
+<p>The <code>Circle</code> class can for example be used as follows:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">radius</span>
+<span class="mi">5</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">area</span>
+<span class="mf">78.5398163375</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">area</span>
+<span class="mf">12.566370614</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="ne">AttributeError</span><span class="p">:</span> <span class="n">can</span><span class="s1">'t set attribute</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">cylinder_volume</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="mf">50.265482456</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Radius</span> <span class="n">must</span> <span class="n">be</span> <span class="n">positive</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Circle</span><span class="o">.</span><span class="n">unit_circle</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">radius</span>
+<span class="mi">1</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+<span class="mf">3.1415926535</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Circle</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+<span class="mf">3.1415926535</span>
 </pre></div>
 
     </div>
