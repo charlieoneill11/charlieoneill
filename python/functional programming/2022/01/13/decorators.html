@@ -13,14 +13,14 @@
 <link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html" />
 <meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html" />
 <meta property="og:site_name" content="Charlie O’Neill" />
-<meta property="og:image" content="https://charlieoneill11.github.io/charlieoneill/images/decorators/python.png" />
+<meta property="og:image" content="https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-01-13T00:00:00-06:00" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/decorators/python.png" />
+<meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg" />
 <meta property="twitter:title" content="Intuitively understanding Python decorators" />
 <script type="application/ld+json">
-{"headline":"Intuitively understanding Python decorators","dateModified":"2022-01-13T00:00:00-06:00","url":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html","datePublished":"2022-01-13T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html"},"image":"https://charlieoneill11.github.io/charlieoneill/images/decorators/python.png","description":"Syntactic sugar and functional implementation of decorators","@context":"https://schema.org"}</script>
+{"headline":"Intuitively understanding Python decorators","dateModified":"2022-01-13T00:00:00-06:00","url":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html","datePublished":"2022-01-13T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html"},"image":"https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg","description":"Syntactic sugar and functional implementation of decorators","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -177,9 +177,19 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>By definition, a decorator is a function that takes another function and extends the behavior of the latter function without explicitly modifying it.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Functions">
 <a class="anchor" href="#Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functions<a class="anchor-link" href="#Functions"> </a>
 </h2>
+<p>Before you can understand decorators, you must first understand how functions work. For our purposes, a function returns a value based on the given arguments. Here is a very simple example:</p>
+
 </div>
 </div>
 </div>
@@ -221,9 +231,19 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>In general, functions in Python may also have side effects rather than just turning an input into an output. The print() function is a basic example of this: it returns <code>None</code> while having the side effect of outputting something to the console. However, to understand decorators, it is enough to think about functions as something that turns given arguments into a value.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="First-class-objects">
 <a class="anchor" href="#First-class-objects" aria-hidden="true"><span class="octicon octicon-link"></span></a>First-class objects<a class="anchor-link" href="#First-class-objects"> </a>
 </h3>
+<p>In Python, functions are first-class objects. This means that functions can be passed around and used as arguments, just like any other object (<code>string</code>, <code>int</code>, <code>float</code>, <code>list</code>, and so on). Consider the following three functions:</p>
+
 </div>
 </div>
 </div>
@@ -251,6 +271,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here, <code>say_hello()</code> and <code>be_awesome()</code> are regular functions that expect a name given as a string. The <code>greet_bob()</code> function however, expects a function as its argument. We can, for instance, pass it the <code>say_hello()</code> or the <code>be_awesome()</code> function:</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -317,6 +345,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that <code>greet_bob(say_hello)</code> refers to two functions, but in different ways: greet_bob() and say_hello. The say_hello function is named without parentheses. This means that only a reference to the function is passed. The function is not executed. The greet_bob() function, on the other hand, is written with parentheses, so it will be called as usual.</p>
+
+</div>
+</div>
+</div>
 </div>
 
 
