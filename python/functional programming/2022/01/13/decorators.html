@@ -4,21 +4,23 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Functions | Charlie O’Neill</title>
+<title>Intuitively understanding Python decorators | Charlie O’Neill</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Functions" />
+<meta property="og:title" content="Intuitively understanding Python decorators" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<meta property="og:description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/2022/01/13/decorators.html" />
-<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/2022/01/13/decorators.html" />
+<meta name="description" content="Syntactic sugar and functional implementation of decorators" />
+<meta property="og:description" content="Syntactic sugar and functional implementation of decorators" />
+<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html" />
+<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html" />
 <meta property="og:site_name" content="Charlie O’Neill" />
+<meta property="og:image" content="https://charlieoneill11.github.io/charlieoneill/images/some_folder/your_image.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-01-13T00:00:00-06:00" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Functions" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/some_folder/your_image.png" />
+<meta property="twitter:title" content="Intuitively understanding Python decorators" />
 <script type="application/ld+json">
-{"headline":"Functions","dateModified":"2022-01-13T00:00:00-06:00","url":"https://charlieoneill11.github.io/charlieoneill/2022/01/13/decorators.html","datePublished":"2022-01-13T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/2022/01/13/decorators.html"},"description":"Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.","@context":"https://schema.org"}</script>
+{"headline":"Intuitively understanding Python decorators","dateModified":"2022-01-13T00:00:00-06:00","url":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html","datePublished":"2022-01-13T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html"},"image":"https://charlieoneill11.github.io/charlieoneill/images/some_folder/your_image.png","description":"Syntactic sugar and functional implementation of decorators","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -104,7 +106,7 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Functions</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-01-13T00:00:00-06:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Intuitively understanding Python decorators</h1><p class="page-description">Syntactic sugar and functional implementation of decorators</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-01-13T00:00:00-06:00" itemprop="datePublished">
         Jan 13, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
@@ -114,6 +116,16 @@ window.onload = wrap_img;
     
 </span></p>
 
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#Python">Python</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#functional programming">functional programming</a>
+        
+      
+      </p>
     
 
     
@@ -147,7 +159,13 @@ window.onload = wrap_img;
       </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <!--
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Functions">Functions </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#First-class-objects">First-class objects </a></li>
+</ul>
+</li>
+</ul><!--
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
 #################################################
@@ -156,6 +174,15 @@ window.onload = wrap_img;
 
 <div class="container" id="notebook-container">
         
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Functions">
+<a class="anchor" href="#Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functions<a class="anchor-link" href="#Functions"> </a>
+</h2>
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -191,9 +218,12 @@ window.onload = wrap_img;
 </div>
     
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="First-class-objects">First-class objects<a class="anchor-link" href="#First-class-objects"> </a></h2>
+<h3 id="First-class-objects">
+<a class="anchor" href="#First-class-objects" aria-hidden="true"><span class="octicon octicon-link"></span></a>First-class objects<a class="anchor-link" href="#First-class-objects"> </a>
+</h3>
 </div>
 </div>
 </div>
@@ -205,13 +235,13 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
 <span class="k">def</span> <span class="nf">be_awesome</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Yo </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, together we are the awesomest!&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"Yo </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, together we are the awesomest!"</span>
 
 <span class="k">def</span> <span class="nf">greet_bob</span><span class="p">(</span><span class="n">greeter_func</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">greeter_func</span><span class="p">(</span><span class="s2">&quot;Bob&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">greeter_func</span><span class="p">(</span><span class="s2">"Bob"</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -243,7 +273,7 @@ window.onload = wrap_img;
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&#39;Hello Bob&#39;</pre>
+<pre>'Hello Bob'</pre>
 </div>
 
 </div>
@@ -276,7 +306,7 @@ window.onload = wrap_img;
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&#39;Yo Bob, together we are the awesomest!&#39;</pre>
+<pre>'Yo Bob, together we are the awesomest!'</pre>
 </div>
 
 </div>
@@ -291,7 +321,15 @@ window.onload = wrap_img;
 
 
 
-  </div><a class="u-url" href="/charlieoneill/2022/01/13/decorators.html" hidden></a>
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="charlieoneill11/charlieoneill"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/charlieoneill/python/functional%20programming/2022/01/13/decorators.html" hidden></a>
 </article>
 
       </div>
