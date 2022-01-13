@@ -112,7 +112,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      1 min read
+      2 min read
     
 </span></p>
 
@@ -163,6 +163,8 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#Functions">Functions </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#First-class-objects">First-class objects </a></li>
+<li class="toc-entry toc-h3"><a href="#Inner-functions">Inner-functions </a></li>
+<li class="toc-entry toc-h3"><a href="#Returning-functions-from-functions">Returning functions from functions </a></li>
 </ul>
 </li>
 </ul><!--
@@ -231,7 +233,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In general, functions in Python may also have side effects rather than just turning an input into an output. The print() function is a basic example of this: it returns <code>None</code> while having the side effect of outputting something to the console. However, to understand decorators, it is enough to think about functions as something that turns given arguments into a value.</p>
+<p>In general, functions in Python may also have side effects rather than just turning an input into an output. The <code>print()</code> function is a basic example of this: it returns <code>None</code> while having the side effect of outputting something to the console. However, to understand decorators, it is enough to think about functions as something that turns given arguments into a value.</p>
 
 </div>
 </div>
@@ -348,8 +350,162 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that <code>greet_bob(say_hello)</code> refers to two functions, but in different ways: greet_bob() and say_hello. The say_hello function is named without parentheses. This means that only a reference to the function is passed. The function is not executed. The greet_bob() function, on the other hand, is written with parentheses, so it will be called as usual.</p>
+<p>Note that <code>greet_bob(say_hello)</code> refers to two functions, but in different ways: <code>greet_bob()</code> and <code>say_hello</code>. The <code>say_hello</code> function is named without parentheses. This means that only a reference to the function is passed. The function is not executed. The <code>greet_bob()</code> function, on the other hand, is written with parentheses, so it will be called as usual.</p>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Inner-functions">
+<a class="anchor" href="#Inner-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inner-functions<a class="anchor-link" href="#Inner-functions"> </a>
+</h3>
+<p>It’s possible to define functions inside other functions. Such functions are called <em>inner functions</em>. Here’s an example of a function with two inner functions:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Printing from the parent() function"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">first_child</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Printing from the first_child() function"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">second_child</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Printing from the second_child() function"</span><span class="p">)</span>
+
+    <span class="n">second_child</span><span class="p">()</span>
+    <span class="n">first_child</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What happens when you call the <code>parent()</code> function? Think about this for a minute. The output will be as follows:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">parent</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Printing from the parent() function
+Printing from the second_child() function
+Printing from the first_child() function
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that the order in which the inner functions are defined does not matter. Like with any other functions, the printing only happens when the inner functions are executed.</p>
+<p>Furthermore, the inner functions are not defined until the parent function is called. They are locally scoped to <code>parent()</code>: they only exist inside the <code>parent()</code> function as local variables. Try calling <code>first_child()</code>. You should get an error:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Furthermore, the inner functions are not defined until the parent function is called. They are locally scoped to <code>parent()</code>: they only exist inside the <code>parent()</code> function as local variables. Try calling <code>first_child()</code>. You should get an error:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">first_child</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/k4/z1fdqs457dx3kgvlgz2mxrz80000gn/T/ipykernel_9570/1494258006.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-red-fg"># collapse</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg"> </span>first_child<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name 'first_child' is not defined</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Whenever you call <code>parent()</code>, the inner functions <code>first_child()</code> and <code>second_child()</code> are also called. But because of their local scope, they aren’t available outside of the <code>parent()</code> function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Returning-functions-from-functions">
+<a class="anchor" href="#Returning-functions-from-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Returning functions from functions<a class="anchor-link" href="#Returning-functions-from-functions"> </a>
+</h3>
 </div>
 </div>
 </div>
