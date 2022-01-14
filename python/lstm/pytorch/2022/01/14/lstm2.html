@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      7 min read
+      8 min read
     
 </span></p>
 
@@ -161,7 +161,7 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
-<li class="toc-entry toc-h2"><a href="#Predicting-Tesla-stock-price">Predicting Tesla stock price </a>
+<li class="toc-entry toc-h2"><a href="#Predicting-the-price-of-Bitcoin">Predicting the price of Bitcoin </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Preprocessing-and-exploratory-analysis">Preprocessing and exploratory analysis </a></li>
 <li class="toc-entry toc-h3"><a href="#Setting-inputs-and-outputs">Setting inputs and outputs </a></li>
@@ -191,8 +191,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Predicting-Tesla-stock-price">
-<a class="anchor" href="#Predicting-Tesla-stock-price" aria-hidden="true"><span class="octicon octicon-link"></span></a>Predicting Tesla stock price<a class="anchor-link" href="#Predicting-Tesla-stock-price"> </a>
+<h2 id="Predicting-the-price-of-Bitcoin">
+<a class="anchor" href="#Predicting-the-price-of-Bitcoin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Predicting the price of Bitcoin<a class="anchor-link" href="#Predicting-the-price-of-Bitcoin"> </a>
 </h2>
 <p>For this problem, we're going to focus on financial data. Before we begin, I would like to point out that LSTMs will not make you rich, even if they are excellent forecasters for time-series data. <strong>No</strong> model will make you rich; there's a whole field of thinking on epistemic humility and how impossible it is for anything you do to detect any edge in the market; I won't go into it here. But know this: if you've found an inconsistency in the price of a stock (it's too low, or too high and you want to capitalise on that), and you believe that no-one else has spotted this inconsistency, then you might want to rethink your surety. Recall that "no-one else" in this scenario includes the team of PhDs sitting in Goldman Sachs with a supercomputing cluster, the lowest latency in information and order processing in the market, and multi-billion dollar financial incentives to find exactly the same inconsistencies as you. If you really believe you've beaten them, you haven't. For more detail on this line of thinking, see Eliezer Yudkowsky’s <a href="https://equilibriabook.com/toc/"><em>Inadequate Equilibria</em></a>.</p>
 <p>We'll frame our problem as follows. We have historical price data for Bitcoin, which includes the following predictors for each day (where we have daily time steps):</p>
@@ -200,9 +200,9 @@ window.onload = wrap_img;
 <li>Opening price</li>
 <li>High price</li>
 <li>Low price</li>
-<li>Volume traded
-Our target is closing price at each time step. </li>
+<li>Volume traded</li>
 </ul>
+<p>Our target is closing price at each time step.</p>
 
 </div>
 </div>
@@ -381,7 +381,7 @@ Our target is closing price at each time step. </li>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Interesting. We want</p>
+<p>Interesting. We want a realistic emulation of what would happen in the real-world. That is, we want a few years of historical data, and train an LSTM to predict what will happen to the price of Bitcoin in the next few months.</p>
 
 </div>
 </div>
@@ -392,6 +392,8 @@ Our target is closing price at each time step. </li>
 <h3 id="Setting-inputs-and-outputs">
 <a class="anchor" href="#Setting-inputs-and-outputs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting inputs and outputs<a class="anchor-link" href="#Setting-inputs-and-outputs"> </a>
 </h3>
+<p>Recall that our predictors will consist of all the columns except our target, closing price. Note that we want to use an <code>sklearn</code> preprocessor below, which requires reshaping the array if it consists of a single feature, as our target does. Hence, for the target <code>y</code>, we have to call <code>values</code>, which removes the axes labels and will allow us to reshape the array.</p>
+
 </div>
 </div>
 </div>
@@ -429,6 +431,16 @@ Our target is closing price at each time step. </li>
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now have the task of standardising our features. We'll use standardisation for our training features by removing the mean and scaling to unit variance. The standard score of a sample x is calculated as:</p>
+<p>$z = \frac{(x - u)}{s}$</p>
+<p>where $u$ is the mean of the training samples, and $s$ is the standard deviation of the training samples. Standardisation of a dataset is a common requirement for many machine learning estimators: they might behave badly if the individual features do not more or less look like standard normally distributed data (e.g. Gaussian with 0 mean and unit variance).</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
