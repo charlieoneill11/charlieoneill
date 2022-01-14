@@ -20,7 +20,7 @@
 <meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg" />
 <meta property="twitter:title" content="Intuitively understanding Python decorators" />
 <script type="application/ld+json">
-{"headline":"Intuitively understanding Python decorators","dateModified":"2022-01-13T00:00:00-06:00","url":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html","datePublished":"2022-01-13T00:00:00-06:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html"},"image":"https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg","description":"Syntactic sugar and functional implementation of decorators","@context":"https://schema.org"}</script>
+{"url":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html","@type":"BlogPosting","headline":"Intuitively understanding Python decorators","dateModified":"2022-01-13T00:00:00-06:00","datePublished":"2022-01-13T00:00:00-06:00","image":"https://charlieoneill11.github.io/charlieoneill/images/decorators/decorator.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/python/functional%20programming/2022/01/13/decorators.html"},"description":"Syntactic sugar and functional implementation of decorators","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -393,41 +393,20 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">standard_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening before the function is called."</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening before func is called."</span><span class="p">)</span>
         <span class="n">func</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening after the function is called."</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening after func is called."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 
 <span class="k">def</span> <span class="nf">shoot_ball</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"I shot the ball."</span><span class="p">)</span>
 
-<span class="n">say_whee</span> <span class="o">=</span> <span class="n">my_decorator</span><span class="p">(</span><span class="n">say_whee</span><span class="p">)</span>
+<span class="n">shoot</span> <span class="o">=</span> <span class="n">standard_decorator</span><span class="p">(</span><span class="n">shoot_ball</span><span class="p">)</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">/var/folders/k4/z1fdqs457dx3kgvlgz2mxrz80000gn/T/ipykernel_1467/3116915085.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">      9</span>     print<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"I shot the ball."</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     10</span> 
-<span class="ansi-green-fg">---&gt; 11</span><span class="ansi-red-fg"> </span>say_whee <span class="ansi-blue-fg">=</span> my_decorator<span class="ansi-blue-fg">(</span>say_whee<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-red-fg">NameError</span>: name 'say_whee' is not defined</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -441,7 +420,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">say_whee</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">shoot</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -454,9 +433,9 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Something is happening before the function is called.
-Whee!
-Something is happening after the function is called.
+<pre>Something is happening before func is called.
+I shot the ball.
+Something is happening after func is called.
 </pre>
 </div>
 </div>
@@ -470,9 +449,8 @@ Something is happening after the function is called.
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>To understand what’s going on here, look back at the previous examples. We are literally just applying everything you have learned so far.</p>
 <p>The so-called decoration happens at the following line:</p>
-<div class="highlight"><pre><span></span><span class="n">say_whee</span> <span class="o">=</span> <span class="n">my_decorator</span><span class="p">(</span><span class="n">say_whee</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">shoot</span> <span class="o">=</span> <span class="n">standard_decorator</span><span class="p">(</span><span class="n">shoot_ball</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -481,7 +459,7 @@ Something is happening after the function is called.
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In effect, the name <code>say_whee</code> now points to the <code>wrapper()</code> inner function. Remember that you return wrapper as a function when you call <code>my_decorator(say_whee)</code>:</p>
+<p>In effect, the name <code>shoot_ball</code> now points to the <code>wrapper()</code> inner function. Remember that you return wrapper as a function when you call <code>standard_decorator(shoot_ball)</code>:</p>
 
 </div>
 </div>
@@ -493,7 +471,7 @@ Something is happening after the function is called.
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">say_whee</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">shoot_ball</span>
 </pre></div>
 
     </div>
@@ -508,7 +486,7 @@ Something is happening after the function is called.
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;function __main__.my_decorator.&lt;locals&gt;.wrapper()&gt;</pre>
+<pre>&lt;function __main__.shoot_ball()&gt;</pre>
 </div>
 
 </div>
@@ -522,7 +500,7 @@ Something is happening after the function is called.
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>However, <code>wrapper()</code> has a reference to the original <code>say_whee()</code> as func, and calls that function between the two calls to <code>print()</code>.</p>
+<p>However, <code>wrapper()</code> has a reference to the original <code>shoot_ball()</code> as <code>func</code>, and calls that function between the two calls to <code>print()</code>.</p>
 <p>Put simply: <strong>decorators wrap a function, modifying its behavior</strong>.</p>
 <p>Before moving on, let’s have a look at a second example. Because <code>wrapper()</code> is a regular Python function, the way a decorator modifies a function can change dynamically. So as not to disturb your neighbors, the following example will only run the decorated code during the day:</p>
 
@@ -546,10 +524,10 @@ Something is happening after the function is called.
             <span class="k">pass</span>  <span class="c1"># Hush, the neighbors are asleep</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 
-<span class="k">def</span> <span class="nf">say_whee</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Whee!"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">shoot_ball</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"I shot the ball!"</span><span class="p">)</span>
 
-<span class="n">say_whee</span> <span class="o">=</span> <span class="n">not_during_the_night</span><span class="p">(</span><span class="n">say_whee</span><span class="p">)</span>
+<span class="n">shoot_ball</span> <span class="o">=</span> <span class="n">not_during_the_night</span><span class="p">(</span><span class="n">shoot_ball</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -567,14 +545,45 @@ Something is happening after the function is called.
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">shoot_ball</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>I shot the ball!
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Syntactic-sugar">
 <a class="anchor" href="#Syntactic-sugar" aria-hidden="true"><span class="octicon octicon-link"></span></a>Syntactic sugar<a class="anchor-link" href="#Syntactic-sugar"> </a>
 </h2>
-<p>The way you decorated <code>say_whee()</code> above is a little clunky. First of all, you end up typing the name <code>say_whee</code> three times. In addition, the decoration gets a bit hidden away below the definition of the function.</p>
-<p>Instead, Python allows you to use decorators in a simpler way with the @ symbol, sometimes called the “pie” syntax. The following example does the exact same thing as the first decorator example:</p>
+<p>The way you decorated <code>shoot_ball()</code> above is a little clunky. First of all, you end up typing the name <code>shoot_ball</code> three times. In addition, the decoration gets a bit hidden away below the definition of the function.</p>
+<p>Instead, Python allows you to use decorators in a simpler way with the <code>@</code> symbol, sometimes called the “pie” syntax. The following example does the exact same thing as the first decorator example:</p>
 
 </div>
 </div>
@@ -586,16 +595,16 @@ Something is happening after the function is called.
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">my_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">standard_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening before the function is called."</span><span class="p">)</span>
         <span class="n">func</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"Something is happening after the function is called."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 
-<span class="nd">@my_decorator</span>
-<span class="k">def</span> <span class="nf">say_whee</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Whee!"</span><span class="p">)</span>
+<span class="nd">@standard_decorator</span>
+<span class="k">def</span> <span class="nf">shoot_ball</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"I shot the ball!"</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -608,7 +617,7 @@ Something is happening after the function is called.
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So, <code>@my_decorator</code> is just an easier way of saying <code>say_whee = my_decorator(say_whee)</code>. It’s how you apply a decorator to a function.</p>
+<p>So, <code>@standard_decorator</code> is just an easier way of saying <code>shoot_ball = standard_decorator(shoot_ball)</code>. It’s how you apply a decorator to a function.</p>
 
 </div>
 </div>
