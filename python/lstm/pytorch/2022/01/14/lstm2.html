@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      10 min read
+      12 min read
     
 </span></p>
 
@@ -629,7 +629,8 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
 <h3 id="LSTM-model">
 <a class="anchor" href="#LSTM-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>LSTM model<a class="anchor-link" href="#LSTM-model"> </a>
 </h3>
-<p>Now we need to construct the LSTM class, inheriting from <code>nn.Module</code>. In contrast to our previous univariate LSTM, we're going to build the model with the <code>nn.LSTM</code> rather than <code>nn.LSTMCell</code>. This is for two reasons: firstly, it's nice to be exposed to both so that we have the option. Secondly, we don't need the flexibility that <code>nn.LSTMCell</code> provides. We know that <code>nn.LSTM</code> is essentially just a recurrent application of <code>nn.LSTMCell</code>. Thus, we would only use <code>nn.LSTMCell</code> if we wanted to apply other transformation in between different LSTM layers, such as batch-normalisation and dropout. Here however, we can implement dropout automatically using the <code>dropout</code> parameter in <code>nn.LSTM</code>. We've already standardised our data. Thus, there's not a whole lot of reasons to use the more</p>
+<p>Now we need to construct the LSTM class, inheriting from <code>nn.Module</code>. In contrast to our previous univariate LSTM, we're going to build the model with the <code>nn.LSTM</code> rather than <code>nn.LSTMCell</code>. This is for two reasons: firstly, it's nice to be exposed to both so that we have the option. Secondly, we don't need the flexibility that <code>nn.LSTMCell</code> provides. We know that <code>nn.LSTM</code> is essentially just a recurrent application of <code>nn.LSTMCell</code>. Thus, we would only use <code>nn.LSTMCell</code> if we wanted to apply other transformation in between different LSTM layers, such as batch-normalisation and dropout. Here however, we can implement dropout automatically using the <code>dropout</code> parameter in <code>nn.LSTM</code>. We've already standardised our data. Thus, there's not a whole lot of reasons to use the more fiddly <code>nn.LSTMCell</code>.</p>
+<p>As per usual, we'll present the entire model class first, and then break it down line by line.</p>
 
 </div>
 </div>
@@ -643,18 +644,17 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="n">num_classes</span> <span class="c1"># number of classes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span> <span class="o">=</span> <span class="n">num_layers</span> <span class="c1"># number of layers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_size</span> <span class="o">=</span> <span class="n">input_size</span> <span class="c1"># input size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span> <span class="c1"># hidden state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seq_length</span> <span class="o">=</span> <span class="n">seq_length</span> <span class="c1"># sequence length</span>
         <span class="c1"># LSTM model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span>
-                          <span class="n">num_layers</span><span class="o">=</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># lstm</span>
+                            <span class="n">num_layers</span><span class="o">=</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># lstm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fc_1</span> <span class="o">=</span>  <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="c1"># fully connected 1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span> <span class="c1"># fully connected last layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span> <span class="c1"># fully connected last layer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
@@ -668,7 +668,7 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">hn</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_1</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="c1"># first dense</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="c1"># relu</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="c1"># final Output</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="c1"># final output</span>
         <span class="k">return</span> <span class="n">out</span>
 </pre></div>
 
@@ -679,6 +679,28 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In our initialisation, as usual we initialisation our parent class, <code>nn.Module</code>. Most initialisations in a Pytorch model are separated into two distinct chunks:</p>
+<ol>
+<li>Any variables that the class will need to reference, for things such as hidden layer size, input size, and number of layers.</li>
+<li>Defining the layers of the model (without connecting them) using the variables instantiated above.</li>
+</ol>
+<p>This is exactly what we do here. If you carefully read over the parameters for the <code>LSTM</code> layers, you know that we need to shape the LSTM with input size, hidden size, and number of recurrent layers. For instance, setting <code>num_layers=2</code> would mean stacking two LSTMs together to form a stacked LSTM, with the second LSTM taking in outputs of the first LSTM and computing the final results. Thus, we initialise these three variables in the first part of the <code>__init__</code>. We also need to force our model to output only one predicted value, so we also initialise a number of classes variable.</p>
+<p>In the second part of <code>__init__</code>, we set out the layers of our network. Our first layer is obviously a recurrent application of LSTM cells, with all the parameters specified above.</p>
+<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> 
+                    <span class="n">num_layers</span><span class="o">=</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>Next, we pass this to a fully connected layer, which has an input of <code>hidden_size</code> (the size of the output from the last LSTM layer) and outputs 128 activations. Then, we pass these 128 activations to another hidden layer, which evidently accepts 128 inputs, and which we want to output our <code>num_classes</code> (which in our case will be 1, see below). Finally, we pass this activation through a non-linear function, in our case ReLU.</p>
+<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">fc_1</span> <span class="o">=</span>  <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="c1"># fully connected</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">fc_2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span> <span class="c1"># fully connected last layer</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
