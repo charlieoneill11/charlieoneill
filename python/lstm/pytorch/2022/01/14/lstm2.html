@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      8 min read
+      9 min read
     
 </span></p>
 
@@ -434,9 +434,10 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We now have the task of standardising our features. We'll use standardisation for our training features by removing the mean and scaling to unit variance. The standard score of a sample x is calculated as:</p>
+<p>We now have the task of standardising our features. We'll use standardisation for our training features $X$ by removing the mean and scaling to unit variance. The standard score of a sample x is calculated as:</p>
 <p>$z = \frac{(x - u)}{s}$</p>
 <p>where $u$ is the mean of the training samples, and $s$ is the standard deviation of the training samples. Standardisation of a dataset is a common requirement for many machine learning estimators: they might behave badly if the individual features do not more or less look like standard normally distributed data (e.g. Gaussian with 0 mean and unit variance).</p>
+<p>For our target $y$, we will scale and translate each feature individually to between 0 and 1. This transformation is often used as an alternative to zero mean, unit variance scaling.</p>
 
 </div>
 </div>
@@ -463,6 +464,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Above, we mentioned that we wanted to predict the data a several months into the future. Thus, we'll use a training data size of 95%, with 5% left for the remaining data that we're going to predict. This gives us a training set size of 2763 days, or about seven and a half years. We will predict 145 days into the future, which is almost 5 months.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -509,8 +518,8 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training Shape: (2763, 4) (2763, 1)
-Testing Shape: (145, 4) (145, 1)
+<pre>Training Shape: (2543, 4) (2543, 1)
+Testing Shape: (365, 4) (365, 1)
 </pre>
 </div>
 </div>
@@ -521,6 +530,14 @@ Testing Shape: (145, 4) (145, 1)
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We need to now, as usual, convert our data into tensors. This is fairly easy - we do so by calling <code>torch.tensor()</code> on our object, and setting the property <code>requires_grad=True</code>. Some old Pytorch tutorials might have you believe that we need to apply the wrapper <code>Variable</code> here. However, this is deprecated, and now the input tensor to be forward propagated has to be can facilitate automatic back propagation (through <code>backward()</code>) without being wrapped in a variable.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -528,30 +545,11 @@ Testing Shape: (145, 4) (145, 1)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span> <span class="c1">#pytorch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Variable</span> 
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">X_test_tensors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">))</span>
-<span class="n">X_test_tensors</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
-
-<span class="n">y_train_tensors</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
-<span class="n">y_test_tensors</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_test</span><span class="p">))</span> 
+<span class="n">y_train_tensors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y_test_tensors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -604,8 +602,8 @@ Testing Shape: (145, 4) (145, 1)
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training Shape: torch.Size([2763, 1, 4]) torch.Size([2763, 1])
-Testing Shape: torch.Size([145, 1, 4]) torch.Size([145, 1])
+<pre>Training Shape: torch.Size([2543, 1, 4]) torch.Size([2543, 1])
+Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
 </pre>
 </div>
 </div>
