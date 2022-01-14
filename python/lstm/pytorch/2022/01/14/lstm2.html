@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      3 min read
+      4 min read
     
 </span></p>
 
@@ -161,7 +161,11 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul id="toc" class="section-nav">
-<li class="toc-entry toc-h2"><a href="#Preprocessing-and-exploratory-analysis">Preprocessing and exploratory analysis </a></li>
+<li class="toc-entry toc-h2"><a href="#Predicting-Tesla-stock-price">Predicting Tesla stock price </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Preprocessing-and-exploratory-analysis">Preprocessing and exploratory analysis </a></li>
+</ul>
+</li>
 <li class="toc-entry toc-h2"><a href="#Setting-inputs-and-outputs">Setting inputs and outputs </a></li>
 <li class="toc-entry toc-h2"><a href="#LSTM-model">LSTM model </a></li>
 <li class="toc-entry toc-h2"><a href="#Training">Training </a></li>
@@ -178,9 +182,26 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Preprocessing-and-exploratory-analysis">
-<a class="anchor" href="#Preprocessing-and-exploratory-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing and exploratory analysis<a class="anchor-link" href="#Preprocessing-and-exploratory-analysis"> </a>
+<p>Whilst it is all well and good to take one array of data, representing a sequence of values of a function over time, and attempt to predict future values, this often doesn't match the quantity of data available in the real world. More likely, the data we receive will be in tabular form, with each row representing a singular time step. Each row probably consists of several different columns; these are the features, or <em>predictors</em>, that we have information about at each time step. One of these columns is not a feature, however. It is the <em>target</em> we want to predict. Consequent</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Predicting-Tesla-stock-price">
+<a class="anchor" href="#Predicting-Tesla-stock-price" aria-hidden="true"><span class="octicon octicon-link"></span></a>Predicting Tesla stock price<a class="anchor-link" href="#Predicting-Tesla-stock-price"> </a>
 </h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Preprocessing-and-exploratory-analysis">
+<a class="anchor" href="#Preprocessing-and-exploratory-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing and exploratory analysis<a class="anchor-link" href="#Preprocessing-and-exploratory-analysis"> </a>
+</h3>
 </div>
 </div>
 </div>
