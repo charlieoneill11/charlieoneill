@@ -559,44 +559,11 @@ Testing Shape: (365, 4) (365, 1)
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>2543</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>If we look at the documentation for the multi-layer <code>torch.nn.LSTM</code>, we see that the input shape depends on whether the parameter <code>batch_first</code> is true. Since we are accustomed to having the first dimension of our data be the batch, we will set <code>batch_first</code> to true. The size of the input is then $(N, L, H_{in})$, where $N$ is the batch size, $L$ is the sequence length, and $H_{in}$ is the input size (i.e. the number of features). In other words, we want the dimensions to be the rows of the dataframe in the first dimension, followed by the length of the dataframe in the next dimension (representing the length of the input sequence), and finally the features (of which we have four) in the final dimension.</p>
-<p>To reshape the tensors into our required shape, we use <code>torch.reshape</code>. This takes as arguments the tensors we are reshaping, and then a tuple of the shape we need to reshape to. For the rows of the dataframe, we can simply look at the shape of the first dimension of <code>x</code>. Since we are applying an LSTM, we recall that the sequence length we feed in is simply one. (Remember that the whole point of the LSTM is not feeding in tonnes of data at each point, because the memory is handled by the inner workings of the LSTM cell. For more on this, see my <a href="https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/2022/01/12/lstm1.html">previous article.</a>)</p>
+<p>To reshape the tensors into our required shape, we use <code>torch.reshape</code>. This takes as arguments the tensors we are reshaping, and then a tuple of the shape we need to reshape to. For the rows of the dataframe, we can simply look at the shape of the first dimension of <code>X_train_tensors.shape[0]</code>. Since we are applying an LSTM, we recall that the sequence length we feed in is simply 1. (Remember that the whole point of the LSTM is not feeding in tonnes of data at each point, because the memory is handled by the inner workings of the LSTM cell. For more on this, see my <a href="https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/2022/01/12/lstm1.html">previous article.</a>) Finally, we want the last dimension to be the number of features, which is stored in <code>X_train_tensors.shape[1]</code>.</p>
 
 </div>
 </div>
@@ -656,51 +623,14 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
 </div>
     
 
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([[-0.52724312, -0.52222316, -0.52889522,  2.21562311],
-       [-0.52139729, -0.51765683, -0.52381251,  1.93547103],
-       [-0.52207744, -0.52144806, -0.52648623,  0.3444833 ],
-       ...,
-       [ 2.02865129,  2.02000896,  2.07419204, -0.32786393],
-       [ 2.04737705,  2.07464471,  2.1087828 , -0.30809078],
-       [ 2.09679535,  2.1036266 ,  2.15493291, -0.24211525]])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="LSTM-model">
 <a class="anchor" href="#LSTM-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>LSTM model<a class="anchor-link" href="#LSTM-model"> </a>
 </h3>
+<p>Now we need to construct the LSTM class, inheriting from <code>nn.Module</code>. In contrast to our previous univariate LSTM, we're going to build the model with the <code>nn.LSTM</code> rather than <code>nn.LSTMCell</code>. This is for two reasons: firstly, it's nice to be exposed to both so that we have the option. Secondly, we don't need the flexibility that <code>nn.LSTMCell</code> provides. We know that <code>nn.LSTM</code> is essentially just a recurrent application of <code>nn.LSTMCell</code>. Thus, we would only use <code>nn.LSTMCell</code> if we wanted to apply other transformation in between different LSTM layers, such as batch-normalisation and dropout. Here however, we can implement dropout automatically using the <code>dropout</code> parameter in <code>nn.LSTM</code>. We've already standardised our data. Thus, there's not a whole lot of reasons to use the more</p>
+
 </div>
 </div>
 </div>
@@ -728,10 +658,12 @@ Testing Shape: torch.Size([365, 1, 4]) torch.Size([365, 1])
         <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-        <span class="n">h_0</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">))</span> <span class="c1"># hidden state</span>
-        <span class="n">c_0</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">))</span> <span class="c1"># internal state</span>
+        <span class="c1"># hidden state</span>
+        <span class="n">h_0</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">))</span>
+        <span class="c1"># cell state</span>
+        <span class="n">c_0</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">))</span>
         <span class="c1"># propagate input through LSTM</span>
-        <span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">h_0</span><span class="p">,</span> <span class="n">c_0</span><span class="p">))</span> <span class="c1"># lstm with input, hidden, and internal state</span>
+        <span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">h_0</span><span class="p">,</span> <span class="n">c_0</span><span class="p">))</span> <span class="c1"># (input, hidden, and internal state)</span>
         <span class="n">hn</span> <span class="o">=</span> <span class="n">hn</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span> <span class="c1"># reshaping the data for Dense layer next</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">hn</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_1</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="c1"># first dense</span>
