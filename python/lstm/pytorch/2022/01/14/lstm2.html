@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      9 min read
+      10 min read
     
 </span></p>
 
@@ -559,6 +559,48 @@ Testing Shape: (365, 4) (365, 1)
 </div>
     
 
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>2543</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we look at the documentation for the multi-layer <code>torch.nn.LSTM</code>, we see that the input shape depends on whether the parameter <code>batch_first</code> is true. Since we are accustomed to having the first dimension of our data be the batch, we will set <code>batch_first</code> to true. The size of the input is then $(N, L, H_{in})$, where $N$ is the batch size, $L$ is the sequence length, and $H_{in}$ is the input size (i.e. the number of features). In other words, we want the dimensions to be the rows of the dataframe in the first dimension, followed by the length of the dataframe in the next dimension (representing the length of the input sequence), and finally the features (of which we have four) in the final dimension.</p>
+<p>To reshape the tensors into our required shape, we use <code>torch.reshape</code>. This takes as arguments the tensors we are reshaping, and then a tuple of the shape we need to reshape to. For the rows of the dataframe, we can simply look at the shape of the first dimension of <code>x</code>. Since we are applying an LSTM, we recall that the sequence length we feed in is simply one. (Remember that the whole point of the LSTM is not feeding in tonnes of data at each point, because the memory is handled by the inner workings of the LSTM cell. For more on this, see my <a href="https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/2022/01/12/lstm1.html">previous article.</a>)</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
