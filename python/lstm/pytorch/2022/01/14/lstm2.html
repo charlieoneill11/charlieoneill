@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      24 min read
+      23 min read
     
 </span></p>
 
@@ -932,15 +932,7 @@ Testing Shape: torch.Size([150, 100, 4]) torch.Size([150, 50])
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Perfect, the first four rows of our data are as they should be. Note that <code>X_check[-1]</code> should be identical to <code>X.iloc[-149:-49]</code>, ending 50 days before the end of our dataset. Let's do a similar check</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Great. So we are taking the 100 time-steps of information, up to the 26th of November 2021, and attempting to predict the 50 days after that, up to the 14th January 2022. For one final check, we make sure that the final batch sample in our test targets matches these dates for prediction.</p>
+<p>Perfect, the first four rows of our data are as they should be. Note that <code>X_check[-1]</code> should be identical to <code>X.iloc[-149:-49]</code>, ending 50 days before the end of our dataset. So we are taking the 100 time-steps of information, up to the 26th of November 2021, and attempting to predict the 50 days after that, up to the 14th January 2022. For one final check, we make sure that the final batch sample in our test targets matches these dates for prediction.</p>
 
 </div>
 </div>
@@ -1441,56 +1433,6 @@ Epoch: 900, train loss: 0.00175, test loss: 0.01749
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_test_tensors_final</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_test_tensors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([100, 4]), torch.Size([50]))</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_predict</span> <span class="o">=</span> <span class="n">lstm</span><span class="p">(</span><span class="n">X_test_tensors_final</span><span class="p">[</span><span class="mi">149</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">test_predict</span> <span class="o">=</span> <span class="n">test_predict</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">test_predict</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">test_predict</span><span class="p">)</span>
@@ -1515,91 +1457,7 @@ Epoch: 900, train loss: 0.00175, test loss: 0.01749
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_target</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[53569.76953125,
- 54815.078125,
- 57248.45703125,
- 57806.56640625,
- 57005.4296875,
- 57229.828125,
- 56477.81640625,
- 53598.24609375,
- 49200.703125,
- 49368.8515625,
- 50582.625,
- 50700.0859375,
- 50504.80078125,
- 47672.125,
- 47243.3046875,
- 49362.5078125,
- 50098.3359375,
- 46737.48046875,
- 46612.63671875,
- 48896.7265625,
- 47665.42578125,
- 46202.1484375,
- 46848.77734375,
- 46707.015625,
- 46880.27734375,
- 48936.61328125,
- 48628.51171875,
- 50784.5390625,
- 50822.19921875,
- 50429.859375,
- 50809.515625,
- 50640.41796875,
- 47588.859375,
- 46444.7109375,
- 47178.125,
- 46306.44921875,
- 47686.8125,
- 47345.21875,
- 46458.1171875,
- 45897.57421875,
- 43569.00390625,
- 43160.9296875,
- 41557.90234375,
- 41733.94140625,
- 41911.6015625,
- 41821.26171875,
- 42735.85546875,
- 43949.1015625,
- 42591.5703125,
- 42801.6796875]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_target</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Actual Data"</span><span class="p">)</span>
-<span class="c1">#plt.axvline(x=50, c='r', linestyle='--')</span>
-<span class="c1">#t = [x for x in range(0, 50)]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_predict</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"LSTM Predictions"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
 </pre></div>
