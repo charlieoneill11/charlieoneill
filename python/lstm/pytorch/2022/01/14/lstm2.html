@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      24 min read
+      25 min read
     
 </span></p>
 
@@ -1880,7 +1880,7 @@ Epoch: 900, train loss: 0.00175, test loss: 0.01749
 <a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
 </h1>
 <p>Interestingly, there's essentially no information on the internet on how to construct multi-step output LSTM models for multivariate time-series data. Hopefully, this article gave you both the intuition and technical understanding for building your own forecasting models. Just remember to think through your input and output shapes very carefully, and construct tensors that represent <strong>past data predicting future data</strong>. Pytorch's LSTM class will take care of the rest, so long as you know the shape of your data.</p>
-<p>In terms of next steps, I would recommend running this model on the most recent Bitcoin data from today, extending back to 100 days previously. See what the model thinks will happen to the price of Bitcoin over the next 50 days. You could also play with the time being fed to the model and the time being forecast; try for longer periods and see if the model can</p>
+<p>In terms of next steps, I would recommend running this model on the most recent Bitcoin data from today, extending back to 100 days previously. See what the model thinks will happen to the price of Bitcoin over the next 50 days. You could also play with the time being fed to the model and the time being forecast; try for longer periods and see if the model can pick up on longer-term dependencies. Finally, you should note that these types of LSTMs are not the only solution to these multivariate, multi-output forecasting problems. There are many other deep learning solutions, including encoder-decoder networks for variable-length sequences, that you should look into. Saying that, LSTMs are a great place to start, and can give incredible performance if you know how to utilise them.</p>
 
 </div>
 </div>
