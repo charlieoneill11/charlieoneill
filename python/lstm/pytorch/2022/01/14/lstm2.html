@@ -110,7 +110,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      25 min read
+      24 min read
     
 </span></p>
 
@@ -200,7 +200,7 @@ window.onload = wrap_img;
 <li>Low price</li>
 <li>Volume traded</li>
 </ul>
-<p>Our target is closing price at each time step.</p>
+<p>Our goal is to take some sequence of the above four values (say, for 100 previous days), and predict the target variable (Bitcoin's price) for the next 50 days into the future.</p>
 
 </div>
 </div>
@@ -472,10 +472,9 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">split_sequences</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">,</span> <span class="n">output_sequence</span><span class="p">,</span> <span class="n">n_steps_in</span><span class="p">,</span> <span class="n">n_steps_out</span><span class="p">):</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span> <span class="c1"># instantiate X and y</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)):</span>
-        <span class="c1"># find the end of the pattern</span>
+        <span class="c1"># find the end of the input, output sequence</span>
         <span class="n">end_ix</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n_steps_in</span>
         <span class="n">out_end_ix</span> <span class="o">=</span> <span class="n">end_ix</span> <span class="o">+</span> <span class="n">n_steps_out</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="c1">#print(end_ix, out_end_ix)</span>
         <span class="c1"># check if we are beyond the dataset</span>
         <span class="k">if</span> <span class="n">out_end_ix</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">):</span> <span class="k">break</span>
         <span class="c1"># gather input and output of the pattern</span>
@@ -734,39 +733,6 @@ Testing Shape: (150, 100, 4) (150, 50)
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>4</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors_final</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X_train_tensors</span><span class="p">,</span>   
                                       <span class="p">(</span><span class="n">X_train_tensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> 
                                        <span class="n">X_train_tensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
@@ -819,83 +785,15 @@ Testing Shape: torch.Size([150, 100, 4]) torch.Size([150, 50])
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>One more thing we want to check: the data logic of the test set. Sequential data is hard to get your head around, especially when it comes to generating a test-set for multi-step output models. Here, we want to take the 100 previous predictors up to the current time-step, and predict 50 time-steps into the future. In the test set, we have 150 batch feature samples, each consisting of 100 time-steps and four feature predictors. In the targets for the test set, we again have 150 batch samples, each consisting of an array of length 50 of scalar outputs.</p>
-<p>Think about what this means. If we were to feed the last batch sample of the test features into our model, we would expect the model to spit out the next 50 time-steps into the future. Since we have a sliding window in our test features, the last batch sample will end on <strong>the last time-step we actually have in our data</strong>. We'd be actually predicting into the future. Since we want a way to validate our results, we need to predict the Bitcoin price for 50 time steps in the test set for which we have the data (i.e. the test targets). If you think about it, we need to slide our window all the way back to the start of the test set. We want to feed in the first sample of our test set (which consists of the current feature predictors for the day, plus the 99 previous days), and generate the Bitcoin prices 50 days into the future (representing the target values in our test set).</p>
-<p>We can start by verifying that the second time-step in our last training features sample is equal to the first time-step in our test features sample.</p>
+<p>Since we want a way to validate our results, we need to predict the Bitcoin price for 50 time steps in the test set for which we have the data (i.e. the test targets). Because of the way we wrote <code>split_sequence()</code> above, we simply need the last sample of 100 days in <code>X_test</code>, run the model on it, and compare these predictions with the last sample of 50 days of <code>y_test</code>. These correspond to a period of 100 days in <code>X_test</code>'s last sample, proceeded immediately by the next 50 days in the last sample of <code>y_test</code>.</p>
 
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train_tensors_final</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>tensor([[2.9406, 2.9031, 2.8463, 2.0855],
-        [2.7509, 2.7503, 2.7930, 2.0812]])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_test_tensors_final</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>tensor([2.7509, 2.7503, 2.7930, 2.0812])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Beautiful, they match. Next, we want to check that the 50 values we will be predicting match the last 50 values of <code>y</code> in the test set.</p>
+<p>We want to check that the 50 values we will be predicting match the last 50 values of <code>y</code> in the test set.</p>
 
 </div>
 </div>
@@ -907,7 +805,44 @@ Testing Shape: torch.Size([150, 100, 4]) torch.Size([150, 50])
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">149</span><span class="p">:</span><span class="o">-</span><span class="mi">49</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_check</span><span class="p">,</span> <span class="n">y_check</span> <span class="o">=</span> <span class="n">split_sequences</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">X_check</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[4.47418828e+04, 4.69707617e+04, 4.39983164e+04, 3.72043123e+10],
+       [4.67231211e+04, 4.93421523e+04, 4.66507070e+04, 3.47068675e+10],
+       [4.93270742e+04, 4.97170195e+04, 4.83121992e+04, 4.05852053e+10],
+       [4.88691055e+04, 4.94716094e+04, 4.81999414e+04, 2.53709754e+10]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">149</span><span class="p">:</span><span class="o">-</span><span class="mi">145</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -981,97 +916,9 @@ Testing Shape: torch.Size([150, 100, 4]) torch.Size([150, 50])
       <td>48199.941406</td>
       <td>25370975378</td>
     </tr>
-    <tr>
-      <th>2021-08-23</th>
-      <td>49291.675781</td>
-      <td>50482.078125</td>
-      <td>49074.605469</td>
-      <td>34305053719</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>2021-11-22</th>
-      <td>58706.847656</td>
-      <td>59266.359375</td>
-      <td>55679.839844</td>
-      <td>35036121783</td>
-    </tr>
-    <tr>
-      <th>2021-11-23</th>
-      <td>56304.554688</td>
-      <td>57875.515625</td>
-      <td>55632.761719</td>
-      <td>37485803899</td>
-    </tr>
-    <tr>
-      <th>2021-11-24</th>
-      <td>57565.851563</td>
-      <td>57803.066406</td>
-      <td>55964.222656</td>
-      <td>36635566789</td>
-    </tr>
-    <tr>
-      <th>2021-11-25</th>
-      <td>57165.417969</td>
-      <td>59367.968750</td>
-      <td>57146.683594</td>
-      <td>34284016248</td>
-    </tr>
-    <tr>
-      <th>2021-11-26</th>
-      <td>58960.285156</td>
-      <td>59183.480469</td>
-      <td>53569.765625</td>
-      <td>41810748221</td>
-    </tr>
   </tbody>
 </table>
-<p>100 rows × 4 columns</p>
 </div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_check</span><span class="p">,</span> <span class="n">y_check</span> <span class="o">=</span> <span class="n">split_sequences</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">X_check</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([[4.47418828e+04, 4.69707617e+04, 4.39983164e+04, 3.72043123e+10],
-       [4.67231211e+04, 4.93421523e+04, 4.66507070e+04, 3.47068675e+10],
-       [4.93270742e+04, 4.97170195e+04, 4.83121992e+04, 4.05852053e+10],
-       [4.88691055e+04, 4.94716094e+04, 4.81999414e+04, 2.53709754e+10],
-       [4.92916758e+04, 5.04820781e+04, 4.90746055e+04, 3.43050537e+10]])</pre>
 </div>
 
 </div>
@@ -1085,47 +932,11 @@ Testing Shape: torch.Size([150, 100, 4]) torch.Size([150, 50])
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Perfect, the first four rows match. Let's check the last four rows match.</p>
+<p>Perfect, the first four rows of our data are as they should be. Note that <code>X_check[-1]</code> should be identical to <code>X.iloc[-149:-49]</code>, ending 50 days before the end of our dataset. Let's do a similar check</p>
 
 </div>
 </div>
 </div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_check</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([[5.63045547e+04, 5.78755156e+04, 5.56327617e+04, 3.74858039e+10],
-       [5.75658516e+04, 5.78030664e+04, 5.59642227e+04, 3.66355668e+10],
-       [5.71654180e+04, 5.93679688e+04, 5.71466836e+04, 3.42840162e+10],
-       [5.89602852e+04, 5.91834805e+04, 5.35697656e+04, 4.18107482e+10]])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
