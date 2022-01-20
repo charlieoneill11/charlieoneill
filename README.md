@@ -11,9 +11,11 @@ https://charlieoneill11.github.io/charlieoneill/
 ## Articles
 
 ### Foundations
-- Neural network from scratch to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
+- NN from scratch (incl. learner) to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
 - Decorators in Python. _PROJECT_: TBD
 - Fastai callbacks. _PROJECT_: TBD
+
+__FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see Chapter 19).
 
 ### Sequential data, time-series and natural language
 - LSTMs for univariate time-series ✅ _PROJECT_: learn trigonometric curves 🚀
@@ -26,7 +28,7 @@ __FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock
 ### Image data
 - Pytorch training loops: convolutions and convnets. _PROJECT_: MNIST
 - Using the fastai training system: data collection and uploading, transfer learning. _PROJECT_: classifying satellite image data based on continent
-- Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST
+- Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST and CAM interpretation.
 - Fastai U-nets. _PROJECT_: Segmentation of tumours in lungs
 - Transformers for vision. _PROJECT_: compare performance with state-of-the-art CNNs
 - Object detection and YOLO5. _PROJECT_: recognising poker cards on a table
