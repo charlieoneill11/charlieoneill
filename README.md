@@ -11,54 +11,45 @@ https://charlieoneill11.github.io/charlieoneill/
 ## Articles
 
 ### Foundations
-- Neural network from scratch to Pytorch process to fastai process
-- - PROJECT: extreme generalisability of logic gates
-- Decorators in Python
-- - PROJECT: TBD
-- Fastai callbacks
-- - PROJECT: TBD
+- Neural network from scratch to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
+- Decorators in Python. _PROJECT_: TBD
+- Fastai callbacks. _PROJECT_: TBD
 
 ### Sequential data, time-series and natural language
-- LSTMs for univariate time-series ✅
-- - PROJECT: learn trigonometric curves 🚀
-- LSTMs for multivariate, multi-output time series ✅
-- - PROJECT: predict Bitcoin price in next two months 🚀
-- Language model from scratch using AWD-LSTM and GRU
-- - PROJECT: ensemble predictions for sentence generation using new fastai dataset
-- Transforms and attention for sequential data
-- - PROJECT: Either ULMFit or music generation
+- LSTMs for univariate time-series ✅ _PROJECT_: learn trigonometric curves 🚀
+- LSTMs for multivariate, multi-output time series ✅ _PROJECT_: predict Bitcoin price in next two months 🚀
+- Language model from scratch using AWD-LSTM and GRU. _PROJECT_: ensemble predictions for sentence generation using new fastai dataset
+- Transforms and attention for sequential data. _PROJECT_: Either ULMFit or music generation
 
-FINAL BUILD: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
+__FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
 
 ### Image data
-- Pytorch training loops: convolutions and convnets
-- - PROJECT: MNIST
-- Using the fastai training system: data collection and uploading, transfer learning
-- - PROJECT: classifying satellite image data based on continent
-- Improving convolutional nets: residual connections and Resnet
-- - PROJECT: FashionMNIST
-- Fastai U-nets
-- - PROJECT: Segmentation of tumours in lungs
-- Transformers for vision
-- - PROJECT: compare performance with state-of-the-art CNNs
-- Object detection and YOLO5
-- - PROJECT: recognising poker cards on a table
-- ConvNext
-- - PROJECT: compare performance with state-of-the-art vision transformers.
+- Pytorch training loops: convolutions and convnets. _PROJECT_: MNIST
+- Using the fastai training system: data collection and uploading, transfer learning. _PROJECT_: classifying satellite image data based on continent
+- Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST
+- Fastai U-nets. _PROJECT_: Segmentation of tumours in lungs
+- Transformers for vision. _PROJECT_: compare performance with state-of-the-art CNNs
+- Object detection and YOLO5. _PROJECT_: recognising poker cards on a table
+- ConvNext. _PROJECT_: compare performance with state-of-the-art vision transformers.
 
-FINAL BUILD: end-to-end computer vision system for poker prediction.
+__FINAL BUILD__: end-to-end computer vision system for poker prediction.
 
 ### Reinforcement learning
 - TBD
 
-FINAL BUILD: AlphaZero Lite for checkers playing.
+__FINAL BUILD__: AlphaZero Lite for checkers playing.
 
 ### Graph/geometric ML
 - TBD
 
-FINAL BUILD: using graph neural networks to construct causal models.
+__FINAL BUILD__: using graph neural networks to construct causal models.
 
 ### Generative adversarial networks
 - TBD
 
-FINAL BUILD: sequential image generation for images over time - OCT scans.
+__FINAL BUILD__: sequential image generation for images over time - OCT scans.
+
+### Computational neuroscience
+- TBD
+
+__FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforcement meta-learning system.
