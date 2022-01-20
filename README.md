@@ -12,12 +12,24 @@ https://charlieoneill11.github.io/charlieoneill/
 _powered by [fastpages](https://github.com/fastai/fastpages)_
 
 
-## Next articles
+## Articles
 
 ### Sequential data, time-series and natural language
+- LSTMs for univariate time-series ✅
+- LSTMs for multivariate, multi-output time series ✅
 - Language model from scratch on new fastai dataset
 - Transforms for sequential data
 - Attention for sequential data
 
+### Image data
+- Pytorch training loops: convolutions and convnets
+- Using the fastai training system: data collection and uploading, fastai architecture
+- Fastai U-nets
+- Transformers for vision
+- Siamese networks
+- ConvNext
+
 ### Foundations
 - Going from neural network from scratch to Pytorch process to fastai process
+- Decorators in Python
+- Fastai callbacks
