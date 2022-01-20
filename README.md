@@ -8,28 +8,57 @@ https://charlieoneill11.github.io/charlieoneill/
 
 # Repo README
 
-
-_powered by [fastpages](https://github.com/fastai/fastpages)_
-
-
 ## Articles
+
+### Foundations
+- Neural network from scratch to Pytorch process to fastai process
+- - PROJECT: extreme generalisability of logic gates
+- Decorators in Python
+- - PROJECT: TBD
+- Fastai callbacks
+- - PROJECT: TBD
 
 ### Sequential data, time-series and natural language
 - LSTMs for univariate time-series ✅
+- - PROJECT: learn trigonometric curves 🚀
 - LSTMs for multivariate, multi-output time series ✅
-- Language model from scratch on new fastai dataset
-- Transforms for sequential data
-- Attention for sequential data
+- - PROJECT: predict Bitcoin price in next two months 🚀
+- Language model from scratch using AWD-LSTM and GRU
+- - PROJECT: ensemble predictions for sentence generation using new fastai dataset
+- Transforms and attention for sequential data
+- - PROJECT: Either ULMFit or music generation
+
+FINAL BUILD: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
 
 ### Image data
 - Pytorch training loops: convolutions and convnets
-- Using the fastai training system: data collection and uploading, fastai architecture
+- - PROJECT: MNIST
+- Using the fastai training system: data collection and uploading, transfer learning
+- - PROJECT: classifying satellite image data based on continent
+- Improving convolutional nets: residual connections and Resnet
+- - PROJECT: FashionMNIST
 - Fastai U-nets
+- - PROJECT: Segmentation of tumours in lungs
 - Transformers for vision
-- Siamese networks
+- - PROJECT: compare performance with state-of-the-art CNNs
+- Object detection and YOLO5
+- - PROJECT: recognising poker cards on a table
 - ConvNext
+- - PROJECT: compare performance with state-of-the-art vision transformers.
 
-### Foundations
-- Going from neural network from scratch to Pytorch process to fastai process
-- Decorators in Python
-- Fastai callbacks
+FINAL BUILD: end-to-end computer vision system for poker prediction.
+
+### Reinforcement learning
+- TBD
+
+FINAL BUILD: AlphaZero Lite for checkers playing.
+
+### Graph/geometric ML
+- TBD
+
+FINAL BUILD: using graph neural networks to construct causal models.
+
+### Generative adversarial networks
+- TBD
+
+FINAL BUILD: sequential image generation for images over time - OCT scans.
