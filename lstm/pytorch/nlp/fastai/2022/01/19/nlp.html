@@ -4,21 +4,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Charlie O’Neill | Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.</title>
+<title>Using RNNs for natural language tasks | Charlie O’Neill</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Charlie O’Neill" />
+<meta property="og:title" content="Using RNNs for natural language tasks" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<meta property="og:description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/" />
-<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/" />
+<meta name="description" content="Constructing AWD-LSTMs to predict the new word in Wikipedia texts" />
+<meta property="og:description" content="Constructing AWD-LSTMs to predict the new word in Wikipedia texts" />
+<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html" />
+<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html" />
 <meta property="og:site_name" content="Charlie O’Neill" />
-<meta property="og:image" content="https://charlieoneill11.github.io/charlieoneill/images/logo.png" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/logo.png" />
-<meta property="twitter:title" content="Charlie O’Neill" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-19T00:00:00-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Using RNNs for natural language tasks" />
 <script type="application/ld+json">
-{"url":"https://charlieoneill11.github.io/charlieoneill/","@type":"WebSite","headline":"Charlie O’Neill","image":"https://charlieoneill11.github.io/charlieoneill/images/logo.png","name":"Charlie O’Neill","description":"Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.","@context":"https://schema.org"}</script>
+{"url":"https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html","@type":"BlogPosting","headline":"Using RNNs for natural language tasks","dateModified":"2022-01-19T00:00:00-06:00","datePublished":"2022-01-19T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html"},"description":"Constructing AWD-LSTMs to predict the new word in Wikipedia texts","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -101,76 +101,103 @@ window.onload = wrap_img;
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home"><p>Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU. Twitter: <a href="https://twitter.com/charles0neill">charlie0neill</a>. LinkedIn <a href="https://www.linkedin.com/in/charles-o-neill/">here</a>. Github: <a href="https://github.com/charlieoneill11">charlieoneill11</a>.</p>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
-<h1 id="posts">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Using RNNs for natural language tasks</h1><p class="page-description">Constructing AWD-LSTMs to predict the new word in Wikipedia texts</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-01-19T00:00:00-06:00" itemprop="datePublished">
+        Jan 19, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      1 min read
+    
+</span></p>
 
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#lstm">lstm</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#pytorch">pytorch</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#nlp">nlp</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#fastai">fastai</a>
+        
+      
+      </p>
+    
 
+    </header>
 
-  
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#importing-and-tokenising-the-data">Importing and tokenising the data</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#tokenisation">Tokenisation</a></li>
+<li class="toc-entry toc-h3"><a href="#batches">Batches</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#creating-the-lstm-model">Creating the LSTM model</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#dropout">Dropout</a></li>
+<li class="toc-entry toc-h3"><a href="#activation-and-temporal-regularisation">Activation and temporal regularisation</a></li>
+<li class="toc-entry toc-h3"><a href="#weight-tying">Weight tying</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#training">Training</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#loading-and-saving-models">Loading and saving models</a></li>
+<li class="toc-entry toc-h3"><a href="#text-generation">Text generation</a></li>
+</ul>
+</li>
+</ul><p>Recurrent models are evidently useful in time-series prediction tasks. But there are other types of tasks that are sequential in nature, and thus we are able to apply LSTMs to them. One such task is natural language prediction. Say we have a corpus of data, and are required to predict the next word in the sequence. We can do this in almost exactly the same way we constructed our univariate LSTM. We can even extend the model’s capability by generating a new prediction, feeding this into the model again as an input, over and over. In this way, we can generate whole sentences with our model. This is the basic foundation of <em>text generation</em>.</p>
 
-  <!-- Hide posts if front matter flag hide:true -->
-  
-  
+<h2 id="importing-and-tokenising-the-data">
+<a class="anchor" href="#importing-and-tokenising-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Importing and tokenising the data</h2>
 
-  <!-- Sort posts by rank, then date -->
-  
-  
-  
+<h3 id="tokenisation">
+<a class="anchor" href="#tokenisation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tokenisation</h3>
 
- 
-  
+<h3 id="batches">
+<a class="anchor" href="#batches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Batches</h3>
 
-   <!-- Assemble final sorted posts array -->
-  
-  <ul class="post-list"><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html">
-            Using RNNs for natural language tasks
-          </a>
-        </h3>
-        <p class="post-meta-description">Constructing AWD-LSTMs to predict the new word in Wikipedia texts</p>
-          <p class="post-meta">Jan 19, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/python/lstm/pytorch/2022/01/14/lstm2.html">
-            Multivariate time-series forecasting with Pytorch LSTMs
-          </a>
-        </h3>
-        <p class="post-meta-description">Using recurrent neural networks for standard tabular time-series problems</p>
-          <p class="post-meta">Jan 14, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/text%20generation/lstm/pytorch/fastai/natural%20language/2022/01/14/lstm_scratch.html">
-            Language model from scratch
-          </a>
-        </h3>
-        <p class="post-meta-description">Building a custom LSTM for text generation</p>
-          <p class="post-meta">Jan 14, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/python/functional%20programming/2022/01/13/decorators.html">
-            Intuitively understanding Python decorators
-          </a>
-        </h3>
-        <p class="post-meta-description">Syntactic sugar and functional implementation of decorators</p>
-          <p class="post-meta">Jan 13, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/lstm/pytorch/2022/01/12/lstm1.html">
-            Pytorch LSTMs for time-series data
-          </a>
-        </h3>
-        <p class="post-meta-description">Using the Pytorch functional API to build temporal models for univariate time series</p>
-          <p class="post-meta">Jan 12, 2022</p>
-      </div>
-  </div></li></ul>
+<h2 id="creating-the-lstm-model">
+<a class="anchor" href="#creating-the-lstm-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating the LSTM model</h2>
 
-    </div>
+<h3 id="dropout">
+<a class="anchor" href="#dropout" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dropout</h3>
+
+<h3 id="activation-and-temporal-regularisation">
+<a class="anchor" href="#activation-and-temporal-regularisation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Activation and temporal regularisation</h3>
+
+<h3 id="weight-tying">
+<a class="anchor" href="#weight-tying" aria-hidden="true"><span class="octicon octicon-link"></span></a>Weight tying</h3>
+
+<h2 id="training">
+<a class="anchor" href="#training" aria-hidden="true"><span class="octicon octicon-link"></span></a>Training</h2>
+
+<h3 id="loading-and-saving-models">
+<a class="anchor" href="#loading-and-saving-models" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading and saving models</h3>
+
+<h3 id="text-generation">
+<a class="anchor" href="#text-generation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Text generation</h3>
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="charlieoneill11/charlieoneill"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html" hidden></a>
+</article>
+
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/charlieoneill/"></data>
