@@ -1,1 +1,10 @@
-
+---
+title: "Using RNNs for natural language tasks"
+description: "Constructing AWD-LSTMs to predict the new word in Wikipedia texts"
+layout: post
+toc: true
+comments: true
+hide: false
+search_exclude: true
+categories: [lstm, pytorch, nlp, fastai]
+---
