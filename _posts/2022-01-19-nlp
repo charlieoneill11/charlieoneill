@@ -8,3 +8,5 @@ hide: false
 search_exclude: true
 categories: [lstm, pytorch, nlp, fastai]
 ---
+
+Recurrent models are evidently useful in time-series prediction tasks. But there are other types of tasks that are sequential in nature, and thus we are able to apply LSTMs to them. One such task is natural language prediction. Say we have a corpus of data, and are required to predict the next word in the sequence. We can do this in almost exactly the same way we constructed our univariate LSTM. We can even extend the model's capability by generating a new prediction, feeding this into the model again as an input, over and over. In this way, we can generate whole sentences with our model. This is the basic foundation of _text generation_.
