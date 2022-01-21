@@ -14,7 +14,7 @@ https://charlieoneill11.github.io/charlieoneill/
 - NN from scratch (incl. learner) to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
 - Decorators in Python. _PROJECT_: TBD
 - Fastai callbacks. _PROJECT_: TBD
-- Weights and biases logging. PROJECT: MNIST.
+- Weights and biases logging. _PROJECT_: MNIST.
 
 __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see Chapter 19).
 
@@ -52,7 +52,10 @@ __FINAL BUILD__: using graph neural networks to construct causal models.
 
 __FINAL BUILD__: sequential image generation for images over time - OCT scans.
 
-### Computational neuroscience
+### Computational neuroscience 🧠
 - TBD
 
 __FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforcement meta-learning system.
+
+### Miscellaneous
+- The pure maths of quantum mechanics: implemented in Julia
