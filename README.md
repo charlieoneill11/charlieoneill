@@ -14,7 +14,6 @@ https://charlieoneill11.github.io/charlieoneill/
 - NN from scratch (incl. learner) to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
 - Decorators in Python. _PROJECT_: TBD
 - Fastai callbacks. _PROJECT_: TBD
-- Weights and biases logging. _PROJECT_: MNIST.
 
 __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see Chapter 19).
 
@@ -48,7 +47,8 @@ __FINAL BUILD__: AlphaZero Lite for checkers playing.
 __FINAL BUILD__: using graph neural networks to construct causal models.
 
 ### Generative adversarial networks
-- TBD
+- Neural style transfer
+- DeepDream
 
 __FINAL BUILD__: sequential image generation for images over time - OCT scans.
 
@@ -56,6 +56,10 @@ __FINAL BUILD__: sequential image generation for images over time - OCT scans.
 - TBD
 
 __FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforcement meta-learning system.
+
+### MLOps
+- Pipeline creation with Amazon Sagemaker and scikit-learn
+- Weights and biases logging. _PROJECT_: MNIST.
 
 ### Miscellaneous
 - The pure maths of quantum mechanics: implemented in Julia
