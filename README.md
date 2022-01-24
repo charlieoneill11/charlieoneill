@@ -61,6 +61,7 @@ __FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforce
 - Pipeline creation with Amazon Sagemaker and scikit-learn
 - Weights and biases logging. _PROJECT_: MNIST.
 - Nbdev for Jupyter notebooks Python package development. _PROJECT_: Pyject.
+- Why you need to learn to love conda environments.
 
 ### Miscellaneous
 - The pure maths of quantum mechanics: implemented in Julia
