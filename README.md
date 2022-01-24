@@ -25,7 +25,7 @@ __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see 
 
 __FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
 
-### Image data
+### Image data 🌌
 - Pytorch training loops: convolutions and convnets. _PROJECT_: MNIST
 - Using the fastai training system: data collection and uploading, transfer learning. _PROJECT_: classifying satellite image data based on continent
 - Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST and CAM interpretation.
@@ -36,12 +36,12 @@ __FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock
 
 __FINAL BUILD__: end-to-end computer vision system for poker prediction.
 
-### Reinforcement learning
+### Reinforcement learning 🕹
 - TBD
 
 __FINAL BUILD__: AlphaZero Lite for checkers playing.
 
-### Graph/geometric ML
+### Graph/geometric ML 🧬
 - TBD
 
 __FINAL BUILD__: using graph neural networks to construct causal models.
@@ -57,9 +57,10 @@ __FINAL BUILD__: sequential image generation for images over time - OCT scans.
 
 __FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforcement meta-learning system.
 
-### MLOps
+### MLOps 🚦
 - Pipeline creation with Amazon Sagemaker and scikit-learn
 - Weights and biases logging. _PROJECT_: MNIST.
+- Nbdev for Jupyter notebooks Python package development. _PROJECT_: Pyject.
 
 ### Miscellaneous
 - The pure maths of quantum mechanics: implemented in Julia
