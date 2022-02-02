@@ -6,24 +6,62 @@
 
 https://charlieoneill11.github.io/charlieoneill/
 
-# My Blog
+# Repo README
 
+## Articles
 
-_powered by [fastpages](https://github.com/fastai/fastpages)_
+### Foundations
+- NN from scratch (incl. learner) to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
+- Decorators in Python. _PROJECT_: TBD
+- Fastai callbacks. _PROJECT_: TBD
 
+__FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see Chapter 19).
 
-## What To Do Next?
+### Sequential data, time-series and natural language
+- LSTMs for univariate time-series ✅ _PROJECT_: learn trigonometric curves 🚀
+- LSTMs for multivariate, multi-output time series ✅ _PROJECT_: predict Bitcoin price in next two months 🚀
+- Language model from scratch using AWD-LSTM ✅ _PROJECT_: sentence generation using new fastai dataset 🚀
+- Transforms and attention for sequential data. _PROJECT_: Either ULMFit or music generation
 
-Great!  You have setup your repo.  Now its time to start writing content.  Some helpful links:
+__FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
 
-- [Writing Blogs With Jupyter](https://github.com/fastai/fastpages#writing-blog-posts-with-jupyter)
+### Image data 🌌
+- Pytorch training loops: convolutions and convnets. _PROJECT_: Kuzushiji-MNIST.
+- Using the fastai training system: data collection and uploading, transfer learning. _PROJECT_: classifying satellite image data based on continent
+- Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST and CAM interpretation.
+- Fastai U-nets. _PROJECT_: Segmentation of tumours in lungs
+- Transformers for vision. _PROJECT_: compare performance with state-of-the-art CNNs
+- Object detection and YOLO5. _PROJECT_: recognising poker cards on a table
+- ConvNext. _PROJECT_: compare performance with state-of-the-art vision transformers.
 
-- [Writing Blogs With Markdown](https://github.com/fastai/fastpages#writing-blog-posts-with-markdown)
+__FINAL BUILD__: end-to-end computer vision system for poker prediction.
 
-- [Writing Blog Posts With Word](https://github.com/fastai/fastpages#writing-blog-posts-with-microsoft-word)
+### Reinforcement learning 🕹
+- TBD
 
-- [(Optional) Preview Your Blog Locally](_fastpages_docs/DEVELOPMENT.md)
+__FINAL BUILD__: AlphaZero Lite for checkers playing.
 
-Note: you may want to remove example blog posts from the `_posts`,  `_notebooks` or `_word` folders (but leave them empty, don't delete these folders) if you don't want these blog posts to appear on your site.
+### Graph/geometric ML 🧬
+- TBD
 
-Please use the [nbdev & blogging channel](https://forums.fast.ai/c/fastai-users/nbdev/48) in the fastai forums for any questions or feature requests.
+__FINAL BUILD__: using graph neural networks to construct causal models.
+
+### Generative adversarial networks
+- Neural style transfer
+- DeepDream
+
+__FINAL BUILD__: sequential image generation for images over time - OCT scans.
+
+### Computational neuroscience 🧠
+- TBD
+
+__FINAL BUILD__: recreate prefrontal cortex and neuron activation dual-reinforcement meta-learning system.
+
+### MLOps 🚦
+- Pipeline creation with Amazon Sagemaker and scikit-learn
+- Weights and biases logging. _PROJECT_: MNIST.
+- Nbdev for Jupyter notebooks Python package development. _PROJECT_: Pyject.
+- Why you need to learn to love conda environments.
+
+### Miscellaneous
+- The pure maths of quantum mechanics: implemented in Julia
