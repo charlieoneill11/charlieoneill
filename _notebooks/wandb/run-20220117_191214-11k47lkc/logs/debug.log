@@ -1,0 +1,103 @@
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting env: {}
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {'api_key': '***REDACTED***'}
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_init.py:_log_setup():371] Logging user logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191214-11k47lkc/logs/debug.log
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_init.py:_log_setup():372] Logging internal logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191214-11k47lkc/logs/debug-internal.log
+2022-01-17 19:12:14,159 INFO    MainThread:3256 [wandb_init.py:_jupyter_setup():321] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x7f9c9318a1f0>
+2022-01-17 19:12:14,160 INFO    MainThread:3256 [wandb_init.py:init():404] calling init triggers
+2022-01-17 19:12:14,160 INFO    MainThread:3256 [wandb_init.py:init():409] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.02, 'architecture': 'CNN', 'dataset': 'CIFAR-100'}
+2022-01-17 19:12:14,160 INFO    MainThread:3256 [wandb_init.py:init():460] starting backend
+2022-01-17 19:12:14,160 INFO    MainThread:3256 [backend.py:_multiprocessing_setup():99] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2022-01-17 19:12:14,189 INFO    MainThread:3256 [backend.py:ensure_launched():216] starting backend process...
+2022-01-17 19:12:14,202 INFO    MainThread:3256 [backend.py:ensure_launched():221] started backend process with pid: 3376
+2022-01-17 19:12:14,204 INFO    MainThread:3256 [wandb_init.py:init():469] backend started and connected
+2022-01-17 19:12:14,251 INFO    MainThread:3256 [wandb_run.py:_label_probe_notebook():911] probe notebook
+2022-01-17 19:12:14,251 INFO    MainThread:3256 [wandb_run.py:_label_probe_notebook():921] Unable to probe notebook: 'NoneType' object has no attribute 'get'
+2022-01-17 19:12:14,251 INFO    MainThread:3256 [wandb_init.py:init():533] updated telemetry
+2022-01-17 19:12:14,291 INFO    MainThread:3256 [wandb_init.py:init():563] communicating current version
+2022-01-17 19:12:15,248 INFO    MainThread:3256 [wandb_init.py:init():568] got version response 
+2022-01-17 19:12:15,248 INFO    MainThread:3256 [wandb_init.py:init():578] communicating run to backend with 30 second timeout
+2022-01-17 19:12:15,650 INFO    MainThread:3256 [wandb_init.py:init():606] starting run threads in backend
+2022-01-17 19:12:20,676 INFO    MainThread:3256 [wandb_run.py:_console_start():1810] atexit reg
+2022-01-17 19:12:20,683 INFO    MainThread:3256 [wandb_run.py:_redirect():1684] redirect: SettingsConsole.WRAP
+2022-01-17 19:12:20,685 INFO    MainThread:3256 [wandb_run.py:_redirect():1721] Wrapping output streams.
+2022-01-17 19:12:20,690 INFO    MainThread:3256 [wandb_run.py:_redirect():1745] Redirects installed.
+2022-01-17 19:12:20,692 INFO    MainThread:3256 [wandb_init.py:init():633] run started, returning control to user process
+2022-01-17 19:12:20,831 INFO    MainThread:3256 [wandb_init.py:_pause_backend():284] pausing backend
+2022-01-17 19:12:20,832 INFO    MainThread:3256 [jupyter.py:save_ipynb():374] not saving jupyter notebook
+2022-01-17 19:13:17,333 INFO    MainThread:3256 [wandb_init.py:_resume_backend():293] resuming backend
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting env: {}
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {'api_key': '***REDACTED***'}
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_init.py:_log_setup():371] Logging user logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191317-1ee6hge8/logs/debug.log
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_init.py:_log_setup():372] Logging internal logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191317-1ee6hge8/logs/debug-internal.log
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_init.py:init():404] calling init triggers
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_init.py:init():409] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.02, 'architecture': 'CNN', 'dataset': 'CIFAR-100'}
+2022-01-17 19:13:17,357 INFO    MainThread:3256 [wandb_init.py:init():424] re-initializing run, found existing run on stack: 11k47lkc
+2022-01-17 19:13:17,358 INFO    MainThread:3256 [wandb_run.py:finish():1457] finishing run charlieoneill/basic-intro/11k47lkc
+2022-01-17 19:13:17,359 INFO    MainThread:3256 [jupyter.py:save_history():429] not saving jupyter history
+2022-01-17 19:13:17,359 INFO    MainThread:3256 [jupyter.py:save_ipynb():374] not saving jupyter notebook
+2022-01-17 19:13:17,359 INFO    MainThread:3256 [wandb_init.py:_jupyter_teardown():303] cleaning up jupyter logic
+2022-01-17 19:13:17,359 INFO    MainThread:3256 [wandb_run.py:_atexit_cleanup():1780] got exitcode: 0
+2022-01-17 19:13:17,360 INFO    MainThread:3256 [wandb_run.py:_restore():1752] restore
+2022-01-17 19:13:18,196 ERROR   MainThread:3256 [wandb_init.py:init():958] error
+Traceback (most recent call last):
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1788, in _atexit_cleanup
+    self._on_finish()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1934, in _on_finish
+    self.history._flush()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_history.py", line 59, in _flush
+    self._callback(row=self._data, step=self._step)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1017, in _history_callback
+    self._backend.interface.publish_history(
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 506, in publish_history
+    self._publish_history(history)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 59, in _publish_history
+    self._publish(rec)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_queue.py", line 45, in _publish
+    raise Exception("The wandb backend process has shutdown")
+Exception: The wandb backend process has shutdown
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 931, in init
+    run = wi.init()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 437, in init
+    self._wl._global_run_stack[-1].finish()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1463, in finish
+    self._atexit_cleanup(exit_code=exit_code)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1797, in _atexit_cleanup
+    self._backend.cleanup()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/backend/backend.py", line 245, in cleanup
+    self.interface.join()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 458, in join
+    super().join()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 599, in join
+    _ = self._communicate_shutdown()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 455, in _communicate_shutdown
+    _ = self._communicate(record)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 213, in _communicate
+    return self._communicate_async(rec, local=local).get(timeout=timeout)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 218, in _communicate_async
+    raise Exception("The wandb backend process has shutdown")
+Exception: The wandb backend process has shutdown
+2022-01-17 19:13:42,806 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting env: {}
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {'api_key': '***REDACTED***'}
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_setup.py:_flush():71] setting login settings: {}
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_init.py:_log_setup():371] Logging user logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191342-3cs8wgwc/logs/debug.log
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_init.py:_log_setup():372] Logging internal logs to /Users/charlesoneill/Documents/GitHub/charlieoneill/_notebooks/wandb/run-20220117_191342-3cs8wgwc/logs/debug-internal.log
+2022-01-17 19:13:42,807 INFO    MainThread:3256 [wandb_init.py:_jupyter_setup():321] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x7f9c931dffd0>
+2022-01-17 19:13:42,808 INFO    MainThread:3256 [wandb_init.py:init():404] calling init triggers
+2022-01-17 19:13:42,808 INFO    MainThread:3256 [wandb_init.py:init():409] wandb.init called with sweep_config: {}
+config: {}
+2022-01-17 19:13:42,808 INFO    MainThread:3256 [wandb_init.py:init():424] re-initializing run, found existing run on stack: 11k47lkc
+2022-01-17 19:13:42,809 INFO    MainThread:3256 [wandb_run.py:finish():1457] finishing run charlieoneill/basic-intro/11k47lkc
+2022-01-17 19:13:42,810 INFO    MainThread:3256 [jupyter.py:save_history():429] not saving jupyter history
+2022-01-17 19:13:42,810 INFO    MainThread:3256 [jupyter.py:save_ipynb():374] not saving jupyter notebook
+2022-01-17 19:13:42,810 INFO    MainThread:3256 [wandb_init.py:_jupyter_teardown():303] cleaning up jupyter logic

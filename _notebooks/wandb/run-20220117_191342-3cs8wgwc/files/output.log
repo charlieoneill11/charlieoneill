@@ -1,0 +1,18 @@
+    status_response = self._interface.communicate_network_status()
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 125, in communicate_network_status
+    resp = self._communicate_stop_status(status)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 378, in _communicate_stop_status
+    resp = self._communicate_network_status(status)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 388, in _communicate_network_status
+    resp = self._communicate(req, local=True)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 213, in _communicate
+    return self._communicate_async(rec, local=local).get(timeout=timeout)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 218, in _communicate_async
+    resp = self._communicate(req, local=True)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 213, in _communicate
+    return self._communicate_async(rec, local=local).get(timeout=timeout)
+  File "/Users/charlesoneill/opt/anaconda3/lib/python3.8/site-packages/wandb/sdk/interface/interface_shared.py", line 218, in _communicate_async
+    raise Exception("The wandb backend process has shutdown")
+Exception: The wandb backend process has shutdown
+    raise Exception("The wandb backend process has shutdown")
+Exception: The wandb backend process has shutdown
