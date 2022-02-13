@@ -14,6 +14,7 @@ https://charlieoneill11.github.io/charlieoneill/
 - NN from scratch (incl. learner) to Pytorch process to fastai process. _PROJECT_: extreme generalisability of logic gates
 - Decorators in Python. _PROJECT_: TBD
 - Fastai callbacks. _PROJECT_: TBD
+- TabNet for tabular data. _PROJECT_: Implementing TabNet from scratch. 
 
 __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see Chapter 19).
 
