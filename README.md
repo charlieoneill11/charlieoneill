@@ -27,7 +27,7 @@ __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see 
 __FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
 
 ### Image data 🌌
-- Pytorch training loops: convolutions and convnets. _PROJECT_: Kuzushiji-MNIST.
+- Pytorch training loops: convolutions and convnets ✅ _PROJECT_: Kuzushiji-MNIST 🚀
 - Using the fastai training system: data collection and uploading, transfer learning. _PROJECT_: classifying satellite image data based on continent
 - Improving convolutional nets: residual connections and Resnet. _PROJECT_: FashionMNIST and CAM interpretation.
 - Fastai U-nets. _PROJECT_: Segmentation of tumours in lungs
