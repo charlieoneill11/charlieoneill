@@ -21,10 +21,16 @@ __FINAL BUILD__: write Resnet18 from scratch, using the fastai methodology (see 
 ### Sequential data, time-series and natural language
 - LSTMs for univariate time-series ✅ _PROJECT_: learn trigonometric curves 🚀
 - LSTMs for multivariate, multi-output time series ✅ _PROJECT_: predict Bitcoin price in next two months 🚀
-- Language model from scratch using AWD-LSTM ✅ _PROJECT_: sentence generation using new fastai dataset 🚀
 - Transforms and attention for sequential data. _PROJECT_: Either ULMFit or music generation
 
 __FINAL BUILD__: algorithmic trading bot - using deep learning for Optiver stock volatility prediction.
+
+### Natural language proessing
+- Language model from scratch using AWD-LSTM ✅ _PROJECT_: sentence generation using new fastai dataset 🚀
+- Introduction to transformers with Hugging Face ✅ 
+- Text classification with DistilBERT ✅ _PROJECT_: offensive tweet classification with _TweetEval_ dataset 🚀
+- Extractive question-answering with Hugging Face. _PROJECT_: Macuject natural language vision data extraction.
+
 
 ### Image data 🌌
 - Pytorch training loops: convolutions and convnets ✅ _PROJECT_: Kuzushiji-MNIST 🚀
