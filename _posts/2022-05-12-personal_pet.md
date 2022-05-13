@@ -1,11 +1,21 @@
-# Personal pet project
-## Using records: storing attributes in memory
+---
+title: "Personal pet project with ARM Assembly"
+description: "Using machine code to create a living pet"
+layout: post
+toc: true
+comments: true
+hide: false
+search_exclude: true
+categories: [arm, assembly, machine]
+---
+
+# Using records: storing attributes in memory
 ```ARM
 .data
 attributes:
 .word 5, 4, 3
 ```
-## Home screen: displaying attributes
+# Home screen: displaying attributes
 We need some way to show the user how their pet is going, in terms of both hunger and contentment, and also overall health. My initial thought was to use a single vertical bar for health, like so:
 ![[health_bar.jpg|300]]
 Each LED in this bar represented a health point. I would then show the pet to the right of this as its own entity i.e. a head and a body. However, after some experimentation, I decided that this system would be too clunky. I simply didn't have enough screen space (that is, enough LEDs) for this system to be effective. Another problem with this approach is that it left me no room to display energy points. I would have had to implement a different peripheral (separate from the two buttons) if the user wanted to check how many energy points they had. 
@@ -14,10 +24,10 @@ Because of this, I decided to incorporate different attributes into the entity d
 
 This still left the issue of how to display energy points. Because it was a bit of a challenge, I decided to see if I could use the touch sensor to trigger a screen which would display the energy points left. 
 
-### Rendering function
+## Rendering function
 So, now that we have the design for the pet egg, we need a way to display all components of the egg at once. We can't just have one function for rendering the egg. This is because different components of the egg rely on different attributes for how many LEDs to display. (I mean, I guess we could have one function, but it would get awfully messy.) Because of this, I'm going to write a function to display the health, hunger and happiness attributes separately. We'll then write a `render` wrapper function over these three parts of the egg, looping through them so quickly that they appear to be show at the same time. 
 
-#### Initial display
+### Initial display
 
 Here's the outline for my render function:
 ```ARM
@@ -72,7 +82,7 @@ This is essentially the same structure as our `render` function above; we've jus
 We now write essentially the same functions for the hunger and happiness attributes. And that's it! We've done it. (It's funny - it's quite difficult to actually take a photo to show you because the photo obviously only captures one aspect of the egg. At least this is proof that it's doing what we want it to do!)
 ![[egg.jpg|300]]
 
-#### Reflecting updated attributes in the display
+### Reflecting updated attributes in the display
 However, we haven't finished our rendering function yet. We don't just want a static egg - we want our egg to reflect the current state of the pet's attributes in memory. This basically means that we're going to need to wrap the render loop itself in an outer main loop. This loop will display the pet for a short period of time, check its attributes, and display it again based on the updated attributes. This way, if an event occurs (e.g. we've fed the pet, played with the pet, the timer has decremented the pet's hunger, etc.) the state of the egg will be updated on the screen.
 
 As we discussed above, if the pet's attributes decrement, we're going to turn off LEDs relating to that attribute in the display. This choice of display is probably a good one; it's easy to imagine the egg decaying or breaking due to neglect or overstimulation. The order for removing LEDs will be:
@@ -82,6 +92,7 @@ As we discussed above, if the pet's attributes decrement, we're going to turn of
 >[!error] Warning
 >Remember, once the final health point attribute goes (represented by the bottom LED in the health bar), the egg dies. 
 
+# Peripherals
 ## Setting up the two buttons
 We need to configure the two buttons, A and B, to trigger a feeding event and a playing event respectively. 
 
@@ -90,8 +101,8 @@ We need to configure the two buttons, A and B, to trigger a feeding event and a 
 
 ## Adding sounds
 
-## Endgame
+# Endgame
 No game would be complete without an objective. Since this project is only meant to be engaging over 2-3 minutes, I thought it would be fun to make the outcome of the game binary over such a time: either you keep the pet alive, or it dies. If it stays alive, we can display some sort of evolution animation of the pet breaking out of its shell.
 
-## Improving the code
-### Refactoring display functions using memory
+# Improving the code
+## Refactoring display functions using memory
