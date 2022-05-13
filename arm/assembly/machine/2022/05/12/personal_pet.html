@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Personal pet project with ARM Assembly | Charlie O’Neill</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Personal pet project with ARM Assembly" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Using machine code to create a living pet" />
+<meta property="og:description" content="Using machine code to create a living pet" />
+<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html" />
+<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html" />
+<meta property="og:site_name" content="Charlie O’Neill" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-05-12T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Personal pet project with ARM Assembly" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-05-12T00:00:00-05:00","datePublished":"2022-05-12T00:00:00-05:00","description":"Using machine code to create a living pet","headline":"Personal pet project with ARM Assembly","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"},"url":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GCXCVHTN45"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GCXCVHTN45');
+</script>
+
+
+<link rel="shortcut icon" type="image/x-icon" href="/charlieoneill/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/charlieoneill/">Charlie O&#39;Neill</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/charlieoneill/about/">About Me</a><a class="page-link" href="/charlieoneill/search/">Search</a><a class="page-link" href="/charlieoneill/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Personal pet project with ARM Assembly</h1><p class="page-description">Using machine code to create a living pet</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-05-12T00:00:00-05:00" itemprop="datePublished">
+        May 12, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#arm">arm</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#assembly">assembly</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#machine">machine</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#using-records-storing-attributes-in-memory">Using records: storing attributes in memory</a></li>
+<li class="toc-entry toc-h1"><a href="#home-screen-displaying-attributes">Home screen: displaying attributes</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#rendering-function">Rendering function</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#initial-display">Initial display</a></li>
+<li class="toc-entry toc-h3"><a href="#reflecting-updated-attributes-in-the-display">Reflecting updated attributes in the display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#peripherals">Peripherals</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#setting-up-the-two-buttons">Setting up the two buttons</a></li>
+<li class="toc-entry toc-h2"><a href="#configuring-the-touch-sensor">Configuring the touch sensor</a></li>
+<li class="toc-entry toc-h2"><a href="#adding-sounds">Adding sounds</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#endgame">Endgame</a></li>
+<li class="toc-entry toc-h1"><a href="#improving-the-code">Improving the code</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#refactoring-display-functions-using-memory">Refactoring display functions using memory</a></li>
+</ul>
+</li>
+</ul><h1 id="using-records-storing-attributes-in-memory">
+<a class="anchor" href="#using-records-storing-attributes-in-memory" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using records: storing attributes in memory</h1>
+<pre><code class="language-ARM">.data
+attributes:
+.word 5, 4, 3
+</code></pre>
+<h1 id="home-screen-displaying-attributes">
+<a class="anchor" href="#home-screen-displaying-attributes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Home screen: displaying attributes</h1>
+<p>We need some way to show the user how their pet is going, in terms of both hunger and contentment, and also overall health. My initial thought was to use a single vertical bar for health, like so:
+![[health_bar.jpg|300]]
+Each LED in this bar represented a health point. I would then show the pet to the right of this as its own entity i.e. a head and a body. However, after some experimentation, I decided that this system would be too clunky. I simply didn’t have enough screen space (that is, enough LEDs) for this system to be effective. Another problem with this approach is that it left me no room to display energy points. I would have had to implement a different peripheral (separate from the two buttons) if the user wanted to check how many energy points they had.</p>
+
+<p>Because of this, I decided to incorporate different attributes into the entity display of the pet itself.</p>
+
+<p>This still left the issue of how to display energy points. Because it was a bit of a challenge, I decided to see if I could use the touch sensor to trigger a screen which would display the energy points left.</p>
+
+<h2 id="rendering-function">
+<a class="anchor" href="#rendering-function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rendering function</h2>
+<p>So, now that we have the design for the pet egg, we need a way to display all components of the egg at once. We can’t just have one function for rendering the egg. This is because different components of the egg rely on different attributes for how many LEDs to display. (I mean, I guess we could have one function, but it would get awfully messy.) Because of this, I’m going to write a function to display the health, hunger and happiness attributes separately. We’ll then write a <code class="language-plaintext highlighter-rouge">render</code> wrapper function over these three parts of the egg, looping through them so quickly that they appear to be show at the same time.</p>
+
+<h3 id="initial-display">
+<a class="anchor" href="#initial-display" aria-hidden="true"><span class="octicon octicon-link"></span></a>Initial display</h3>
+
+<p>Here’s the outline for my render function:</p>
+<pre><code class="language-ARM">.type render, %function
+render:
+	push {lr, r0-r4}
+	mov r2, 0xff0 @ for-loop counter
+	renderLoop:
+		cmp r2, 0
+		ble endRender
+		push {r2}
+		@ do the actual display
+		bl displayHunger
+		bl displayHappiness
+		bl displayHealth 
+		@ decrement, reenter loop
+		pop {r2}
+		sub r2, 1
+		b renderLoop
+	endRender:
+		pop {lr, r0-r4}
+		bx lr
+</code></pre>
+
+<p>All we’re doing is using a simple for-loop to repeatedly ‘blip’ each attribute (represented as a different part of the egg) over and over, creating the illusion of a persistent image. Now, all we have to do is write the <code class="language-plaintext highlighter-rouge">display</code> functions. Health is the easiest, since that’s just a vertical bar down the middle. Let’s do that first:</p>
+<pre><code class="language-ARM">.type displayHealth, %function
+displayHealth:
+	push {lr}
+	mov r2, 0x5
+	healthLoop:
+		cmp r2, 0
+		ble endHealth
+		push {r2}
+		@ health bar
+		mov r0, 0b11111
+		mov r1, 0b11011
+		bl frameBlip
+		@ decrement, reenter loop
+		pop {r2}
+		sub r2, 1
+		b healthLoop
+	endHealth:
+		mov r0, 0b00000
+		mov r1, 0b11111 @ set all columns to high
+		bl led_on @ clear LED screen
+		pop {lr}
+		bx lr
+</code></pre>
+<p>This is essentially the same structure as our <code class="language-plaintext highlighter-rouge">render</code> function above; we’ve just got another for-loop (an <em>inner</em> for-loop). The thing to note here is that we only go through this loop 5 times, in comparison to <code class="language-plaintext highlighter-rouge">0xff0</code> times for the render function. This is because we want to create persistence of vision; if we show each part of the egg for too long, the image won’t be persistent, because our eyes will be able to tell that we’re only displaying one component at a time. The <code class="language-plaintext highlighter-rouge">0x5</code> value was chosen through trial and error.</p>
+
+<p>We now write essentially the same functions for the hunger and happiness attributes. And that’s it! We’ve done it. (It’s funny - it’s quite difficult to actually take a photo to show you because the photo obviously only captures one aspect of the egg. At least this is proof that it’s doing what we want it to do!)
+![[egg.jpg|300]]</p>
+
+<h3 id="reflecting-updated-attributes-in-the-display">
+<a class="anchor" href="#reflecting-updated-attributes-in-the-display" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reflecting updated attributes in the display</h3>
+<p>However, we haven’t finished our rendering function yet. We don’t just want a static egg - we want our egg to reflect the current state of the pet’s attributes in memory. This basically means that we’re going to need to wrap the render loop itself in an outer main loop. This loop will display the pet for a short period of time, check its attributes, and display it again based on the updated attributes. This way, if an event occurs (e.g. we’ve fed the pet, played with the pet, the timer has decremented the pet’s hunger, etc.) the state of the egg will be updated on the screen.</p>
+
+<p>As we discussed above, if the pet’s attributes decrement, we’re going to turn off LEDs relating to that attribute in the display. This choice of display is probably a good one; it’s easy to imagine the egg decaying or breaking due to neglect or overstimulation. The order for removing LEDs will be:</p>
+<ul>
+  <li>
+<em>Hunger and happiness:</em> first, we’ll take out the middle LED. Then, the top and bottom LEDs (in that order). Finally, the 2nd and 4th LEDs.</li>
+  <li>
+<em>Health:</em> since health is a vertical bar, it’s a bit easier. We’ll take out the middle LED, then the 2nd and 4th LEDs, and finally the top and bottom LEDs. The bottom will be last because it represents the base of the egg.</li>
+</ul>
+
+<blockquote>
+  <p>[!error] Warning
+Remember, once the final health point attribute goes (represented by the bottom LED in the health bar), the egg dies.</p>
+</blockquote>
+
+<h1 id="peripherals">
+<a class="anchor" href="#peripherals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Peripherals</h1>
+<h2 id="setting-up-the-two-buttons">
+<a class="anchor" href="#setting-up-the-two-buttons" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up the two buttons</h2>
+<p>We need to configure the two buttons, A and B, to trigger a feeding event and a playing event respectively.</p>
+
+<h2 id="configuring-the-touch-sensor">
+<a class="anchor" href="#configuring-the-touch-sensor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuring the touch sensor</h2>
+
+<h2 id="adding-sounds">
+<a class="anchor" href="#adding-sounds" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding sounds</h2>
+
+<h1 id="endgame">
+<a class="anchor" href="#endgame" aria-hidden="true"><span class="octicon octicon-link"></span></a>Endgame</h1>
+<p>No game would be complete without an objective. Since this project is only meant to be engaging over 2-3 minutes, I thought it would be fun to make the outcome of the game binary over such a time: either you keep the pet alive, or it dies. If it stays alive, we can display some sort of evolution animation of the pet breaking out of its shell.</p>
+
+<h1 id="improving-the-code">
+<a class="anchor" href="#improving-the-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Improving the code</h1>
+<h2 id="refactoring-display-functions-using-memory">
+<a class="anchor" href="#refactoring-display-functions-using-memory" aria-hidden="true"><span class="octicon octicon-link"></span></a>Refactoring display functions using memory</h2>
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="charlieoneill11/charlieoneill"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/charlieoneill/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/charlieoneill/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/charlieoneill/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/charlieoneill11" target="_blank" title="charlieoneill11"><svg class="svg-icon grey"><use xlink:href="/charlieoneill/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/charles0neill" target="_blank" title="charles0neill"><svg class="svg-icon grey"><use xlink:href="/charlieoneill/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
