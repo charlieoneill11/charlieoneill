@@ -153,7 +153,7 @@ Because it's quite boring to stare at an egg for 2-3 minutes, especially if you'
 
 ## Random number generator for events
 There is a random number generator (RNG) peripheral in the microbit (see section 6.19 in the [nRF52833 manual](https://infocenter.nordicsemi.com/pdf/nRF52833_PS_v1.5.pdf) ). The RNG generates true non-deterministic random numbers based on internal thermal noise. In fact, these numbers are so random that they are suitable for cryptographic purposes. In contrast to a linear congruential generator (LCG), the RNG peripheral does not require a seed value.
-![[Screen Shot 2022-05-13 at 12.16.43 pm.png]]
+![](/images/rng.png)
 The RNG is started by triggering the `START` task and stopped by triggering the `STOP` task. When started, new random numbers are generated continuously and written to the value register when ready. A `VALRDY` event is generated for every new random number that is written to the `VALUE` register. This means that after a `VALRDY` event is generated, the CPU has the time until the next `VALRDY` event to read out the random number from the `VALUE` register before it is overwritten by a new random number.
 
 Using the RNG peripheral is much like using the LEDs. We set a certain bit in the `TASK_START` register (`0x400D000`, the RNG base address) to start generating random numbers, we read in a random number into a register using the `VALUE` register (offset from RNG by `0x508`), and then we set a bit in the `TASK_STOP` register (offset `0x004`) to stop generating random numbers.
