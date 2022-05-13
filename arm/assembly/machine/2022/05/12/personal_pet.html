@@ -4,9 +4,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Personal pet project with ARM Assembly | Charlie O’Neill</title>
+<title>Digital pet project with ARM Assembly | Charlie O’Neill</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Personal pet project with ARM Assembly" />
+<meta property="og:title" content="Digital pet project with ARM Assembly" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Using machine code to create a living pet" />
 <meta property="og:description" content="Using machine code to create a living pet" />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-05-12T00:00:00-05:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Personal pet project with ARM Assembly" />
+<meta property="twitter:title" content="Digital pet project with ARM Assembly" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-05-12T00:00:00-05:00","datePublished":"2022-05-12T00:00:00-05:00","description":"Using machine code to create a living pet","headline":"Personal pet project with ARM Assembly","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"},"url":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-05-12T00:00:00-05:00","datePublished":"2022-05-12T00:00:00-05:00","description":"Using machine code to create a living pet","headline":"Digital pet project with ARM Assembly","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"},"url":"https://charlieoneill11.github.io/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -104,13 +104,13 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Personal pet project with ARM Assembly</h1><p class="page-description">Using machine code to create a living pet</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-05-12T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Digital pet project with ARM Assembly</h1><p class="page-description">Using machine code to create a living pet</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-05-12T00:00:00-05:00" itemprop="datePublished">
         May 12, 2022
       </time>
        • <span class="read-time" title="Estimated read time">
     
     
-      5 min read
+      8 min read
     
 </span></p>
 
@@ -157,7 +157,47 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#refactoring-display-functions-using-memory">Refactoring display functions using memory</a></li>
 </ul>
 </li>
-</ul><h1 id="using-records-storing-attributes-in-memory">
+</ul><p><a href="https://en.wikipedia.org/wiki/Digital_pet">Digital pets</a> like the <a href="https://en.wikipedia.org/wiki/Tamagotchi">Tamagotchi</a> or <a href="https://en.wikipedia.org/wiki/Nintendogs">Nintendogs</a> are computer simulations of a friendly animal companion created as a toy or video game. These toys feature an animated depiction of the animal and inputs through button that allow the pet’s human owner to care for it or interct with it. Usually the owner gets to play with it, but also needs to provide food or entertainment in order for the pet to be happy.</p>
+
+<p>Here, we’re going to use ARM Assembly and a microbit to create a digital pet. The program will <strong>display the pet</strong> on the LED display, and allow a human to <strong>interact</strong> with the pet using the microbit’s buttons. The digital pet should provide companionship (that is, it’s <strong>engaging</strong> to look at) but also responsibility (that is, it <strong>requires</strong> interaction).</p>
+
+<p>The pet should have some kind of <em>state</em> (e.g., it’s levels of health and happiness) that is stored in memory, and we will need to use <em>interrupts</em> to receive input from the microbit’s buttons.</p>
+
+<p>Here are our specifications for the program:</p>
+<ul>
+  <li>
+<strong>must</strong> be written in <strong>ARMv7 assembly</strong>
+</li>
+  <li>
+<strong>must</strong> use the LED display to show a digital pet</li>
+  <li>
+<strong>must</strong> use (at least one) data structure in memory to store the “state” of the digital pet</li>
+  <li>
+<strong>must</strong> use interrupts to detect interactions with the microbit’s buttons</li>
+  <li>
+<strong>must</strong> work when the microbit is powered over USB but not connected to a computer (that is, it works after you upload it and plug into a USB charger)</li>
+  <li>
+<strong>must</strong> be <em>engaging</em> and <em>require</em> interaction for a fun experience over 1-3 minutes</li>
+  <li>
+<em>can</em> use the speaker to create sound</li>
+  <li>
+<em>can</em> use other inputs (e.g., microphone, IMU)</li>
+  <li>
+<em>can</em> use <strong>any</strong> peripheral available on the microbit</li>
+</ul>
+
+<p>Once we’ve accomplished this, we’ll try and add a few extensions to make the pet more sophisticated:</p>
+<ul>
+  <li>Improve the LED display to make it really stand out, e.g., by using pulse-width modulation (PWM) and smooth animations, catchy visuals and interesting effects, etc.</li>
+  <li>Write a program that creates pets randomly and provides variation every time you play (e.g., a <em>generative</em> program)</li>
+  <li>Implement a random number generator and use it in your program</li>
+  <li>Use the speaker to create an interesting synthesised sound to go with the digital pet.</li>
+  <li>Use some kind of network connectivity (LEDs to light sensor, bluetooth, UART, etc) to send the pet to another microbit.</li>
+  <li>Have the pet react to changes in environment (use the motion sensor or light sensors).</li>
+  <li>Use non-volatile memory to store the digital pet on the microbit even when the power is disconnected.</li>
+</ul>
+
+<h1 id="using-records-storing-attributes-in-memory">
 <a class="anchor" href="#using-records-storing-attributes-in-memory" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using records: storing attributes in memory</h1>
 <pre><code class="language-ARM">.data
 attributes:
