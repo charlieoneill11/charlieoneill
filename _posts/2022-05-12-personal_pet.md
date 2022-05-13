@@ -1,5 +1,5 @@
 ---
-title: "Personal pet project with ARM Assembly"
+title: "Digital pet project with ARM Assembly"
 description: "Using machine code to create a living pet"
 layout: post
 toc: true
@@ -8,6 +8,32 @@ hide: false
 search_exclude: true
 categories: [arm, assembly, machine]
 ---
+
+[Digital pets](https://en.wikipedia.org/wiki/Digital_pet) like the [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotchi) or [Nintendogs](https://en.wikipedia.org/wiki/Nintendogs) are computer simulations of a friendly animal companion created as a toy or video game. These toys feature an animated depiction of the animal and inputs through button that allow the pet’s human owner to care for it or interct with it. Usually the owner gets to play with it, but also needs to provide food or entertainment in order for the pet to be happy.
+
+Here, we're going to use ARM Assembly and a microbit to create a digital pet. The program will **display the pet** on the LED display, and allow a human to **interact** with the pet using the microbit’s buttons. The digital pet should provide companionship (that is, it’s **engaging** to look at) but also responsibility (that is, it **requires** interaction).
+
+The pet should have some kind of _state_ (e.g., it’s levels of health and happiness) that is stored in memory, and we will need to use _interrupts_ to receive input from the microbit’s buttons.
+
+Here are our specifications for the program: 
+-   **must** be written in **ARMv7 assembly**
+-   **must** use the LED display to show a digital pet
+-   **must** use (at least one) data structure in memory to store the “state” of the digital pet
+-   **must** use interrupts to detect interactions with the microbit’s buttons
+-   **must** work when the microbit is powered over USB but not connected to a computer (that is, it works after you upload it and plug into a USB charger)
+-   **must** be _engaging_ and _require_ interaction for a fun experience over 1-3 minutes
+-   _can_ use the speaker to create sound
+-   _can_ use other inputs (e.g., microphone, IMU)
+-   _can_ use **any** peripheral available on the microbit
+
+Once we've accomplished this, we'll try and add a few extensions to make the pet more sophisticated:
+- Improve the LED display to make it really stand out, e.g., by using pulse-width modulation (PWM) and smooth animations, catchy visuals and interesting effects, etc.
+- Write a program that creates pets randomly and provides variation every time you play (e.g., a _generative_ program)
+- Implement a random number generator and use it in your program
+- Use the speaker to create an interesting synthesised sound to go with the digital pet.
+- Use some kind of network connectivity (LEDs to light sensor, bluetooth, UART, etc) to send the pet to another microbit.
+- Have the pet react to changes in environment (use the motion sensor or light sensors).
+- Use non-volatile memory to store the digital pet on the microbit even when the power is disconnected.
 
 # Using records: storing attributes in memory
 ```ARM
