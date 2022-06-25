@@ -4,22 +4,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Charlie O’Neill | Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.</title>
+<title>Implementing transformers and self-attention from scratch | Charlie O’Neill</title>
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Charlie O’Neill" />
+<meta property="og:title" content="Implementing transformers and self-attention from scratch" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<meta property="og:description" content="Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU." />
-<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/" />
-<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/" />
+<meta name="description" content="Language translation model from first-principles" />
+<meta property="og:description" content="Language translation model from first-principles" />
+<link rel="canonical" href="https://charlieoneill11.github.io/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html" />
+<meta property="og:url" content="https://charlieoneill11.github.io/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html" />
 <meta property="og:site_name" content="Charlie O’Neill" />
-<meta property="og:image" content="https://charlieoneill11.github.io/charlieoneill/images/logo.png" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="https://charlieoneill11.github.io/charlieoneill/images/logo.png" />
-<meta property="twitter:title" content="Charlie O’Neill" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-13T00:00:00-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Implementing transformers and self-attention from scratch" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU.","headline":"Charlie O’Neill","image":"https://charlieoneill11.github.io/charlieoneill/images/logo.png","name":"Charlie O’Neill","url":"https://charlieoneill11.github.io/charlieoneill/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-01-13T00:00:00-06:00","datePublished":"2022-01-13T00:00:00-06:00","description":"Language translation model from first-principles","headline":"Implementing transformers and self-attention from scratch","mainEntityOfPage":{"@type":"WebPage","@id":"https://charlieoneill11.github.io/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html"},"url":"https://charlieoneill11.github.io/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/charlieoneill/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://charlieoneill11.github.io/charlieoneill/feed.xml" title="Charlie O'Neill" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -102,103 +101,93 @@ window.onload = wrap_img;
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home"><p>Posts about deep learning, machine learning, causal inference, maths and computational neuroscience. ML researcher @ Macuject. UG Science + Eco @ ANU. Twitter: <a href="https://twitter.com/charles0neill">charlie0neill</a>. LinkedIn <a href="https://www.linkedin.com/in/charles-o-neill/">here</a>. Github: <a href="https://github.com/charlieoneill11">charlieoneill11</a>.</p>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
-<h1 id="posts">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Implementing transformers and self-attention from scratch</h1><p class="page-description">Language translation model from first-principles</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-01-13T00:00:00-06:00" itemprop="datePublished">
+        Jan 13, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      1 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#pytorch">pytorch</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#natural language processing">natural language processing</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#transformers">transformers</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/charlieoneill/categories/#attention">attention</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/charlieoneill11/charlieoneill/tree/master/_notebooks/2022-01-13-transformers_scratch.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/charlieoneill/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/charlieoneill11/charlieoneill/master?filepath=_notebooks%2F2022-01-13-transformers_scratch.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/charlieoneill/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/charlieoneill11/charlieoneill/blob/master/_notebooks/2022-01-13-transformers_scratch.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/charlieoneill/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          <div class="px-2">
+  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2Fcharlieoneill11%2Fcharlieoneill%2Fblob%2Fmaster%2F_notebooks%2F2022-01-13-transformers_scratch.ipynb" target="_blank">
+      <img class="notebook-badge-image" src="/charlieoneill/assets/badges/deepnote.svg" alt="Launch in Deepnote"/>
+  </a>
+</div>
+
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-01-13-transformers_scratch.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+</div>
 
 
 
-  
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="charlieoneill11/charlieoneill"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html" hidden></a>
+</article>
 
-  <!-- Hide posts if front matter flag hide:true -->
-  
-  
-
-  <!-- Sort posts by rank, then date -->
-  
-  
-  
-
- 
-  
-
-   <!-- Assemble final sorted posts array -->
-  
-  <ul class="post-list"><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/2022/06/24/Untitled.html">
-            Title
-          </a>
-        </h3>
-        <p class="post-meta-description"></p>
-          <p class="post-meta">Jun 24, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/arm/assembly/machine/2022/05/12/personal_pet.html">
-            Digital pet project with ARM Assembly
-          </a>
-        </h3>
-        <p class="post-meta-description">Using machine code to create a living pet</p>
-          <p class="post-meta">May 12, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/python/pytorch/cnn/computer%20vision/2022/02/01/pytorch_model.html">
-            End-to-end Pytorch model in five minutes
-          </a>
-        </h3>
-        <p class="post-meta-description">Standardising dataloaders, model, training and validation - so you don't have to</p>
-          <p class="post-meta">Feb 1, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/lstm/pytorch/nlp/fastai/2022/01/19/nlp.html">
-            Using RNNs for natural language tasks
-          </a>
-        </h3>
-        <p class="post-meta-description">Constructing AWD-LSTMs to predict the new word in Wikipedia texts</p>
-          <p class="post-meta">Jan 19, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/text%20generation/lstm/pytorch/fastai/natural%20language/2022/01/14/lstm_scratch.html">
-            Language model from scratch
-          </a>
-        </h3>
-        <p class="post-meta-description">Building a custom LSTM for text generation</p>
-          <p class="post-meta">Jan 14, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/python/lstm/pytorch/2022/01/14/lstm2.html">
-            Multivariate time-series forecasting with Pytorch LSTMs
-          </a>
-        </h3>
-        <p class="post-meta-description">Using recurrent neural networks for standard tabular time-series problems</p>
-          <p class="post-meta">Jan 14, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/pytorch/natural%20language%20processing/transformers/attention/2022/01/13/transformers_scratch.html">
-            Implementing transformers and self-attention from scratch
-          </a>
-        </h3>
-        <p class="post-meta-description">Language translation model from first-principles</p>
-          <p class="post-meta">Jan 13, 2022</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/charlieoneill/lstm/pytorch/2022/01/12/lstm1.html">
-            Pytorch LSTMs for time-series data
-          </a>
-        </h3>
-        <p class="post-meta-description">Using the Pytorch functional API to build temporal models for univariate time series</p>
-          <p class="post-meta">Jan 12, 2022</p>
-      </div>
-  </div></li></ul>
-
-    </div>
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/charlieoneill/"></data>
