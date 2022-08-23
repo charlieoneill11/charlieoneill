@@ -4,9 +4,9 @@
         "post0": {
             "title": "Title",
             "content": "import pandas as pd import numpy as np import torch.nn as nn import torch from torchvision import datasets from torchvision import transforms from torch.autograd import Variable import matplotlib.pyplot as plt import warnings warnings.filterwarnings(&#39;ignore&#39;) . path = &#39;/Users/charlesoneill/DataspellProjects/pytorch&#39; kmnist = datasets.KMNIST(path, train=True, transform=transforms.Compose([transforms.ToTensor()]), download=False) kmnist_val = datasets.KMNIST(path, train=False, transform=transforms.Compose([transforms.ToTensor()]), download=False) . plt.imshow(np.squeeze(kmnist[0][0]), cmap=&#39;gray&#39;) plt.show() . def plot_samples(): fig, axs = plt.subplots(3,3) axs = axs.flatten() imgs = [] for i in range(30, 39): imgs.append(np.squeeze(kmnist[i][0])) for img, ax in zip(imgs, axs): ax.imshow(img, cmap=&#39;gray&#39;, interpolation=&#39;none&#39;) plt.show() . plot_samples() . kmnist[0][0].shape . torch.Size([1, 28, 28]) . imgs = torch.stack([img_t for img_t, _ in kmnist], dim=3) imgs.shape . torch.Size([1, 28, 28, 60000]) . mean = imgs.view(1, -1).mean(dim=1) std = imgs.view(1, -1).std(dim=1) print(f&quot;Pre-normalisation: mean = {mean.item()}, std = {std.item()}&quot;) . Pre-normalisation: mean = 0.19176216423511505, std = 0.3483428359031677 . transform_norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean, std)]) n_kmnist = datasets.KMNIST(path, train=True, transform=transform_norm, download=False) n_kmnist_val = datasets.KMNIST(path, train=False, transform=transforms.Compose([transforms.ToTensor()]), download=False) . n_imgs = torch.stack([img_t for img_t, _ in n_kmnist], dim=3) mean = n_imgs.view(1, -1).mean(dim=1) std = n_imgs.view(1, -1).std(dim=1) print(f&quot;Post-normalisation: mean = {np.round(mean.item(), 2)}, std = {std.item()}&quot;) . Post-normalisation: mean = -0.0, std = 1.0 . from torch.utils.data import DataLoader train_dataloader = DataLoader(n_kmnist, batch_size=64, shuffle=True) val_dataloader = DataLoader(n_kmnist_val, batch_size=64, shuffle=False) . class CNN(nn.Module): def __init__(self): super().__init__() .",
-            "url": "https://charlieoneill11.github.io/charlieoneill/2022/06/24/Untitled.html",
-            "relUrl": "/2022/06/24/Untitled.html",
-            "date": " • Jun 24, 2022"
+            "url": "https://charlieoneill11.github.io/charlieoneill/2022/08/22/Untitled.html",
+            "relUrl": "/2022/08/22/Untitled.html",
+            "date": " • Aug 22, 2022"
         }
         
     
@@ -63,6 +63,22 @@
   
 
   
+      ,"page3": {
+          "title": "Publications and Talks",
+          "content": "Eigenvalue initialisation and regularisation for koopman autoencoders and beyond . Mathematical and Computational Sciences Seminar, August 2022 . Recent efforts have been made to learn the Koopman operator with predictive autoencoders. However, little attention has been payed to the initialisation of these networks. Noting the importance of eigenvalues to the action of a linear operator, one may ask whether it would be useful to employ them in the initialisation and regularisation of these autoencoders? To answer this, we devise a spectral eigenvalue initialisation and eigenvalue penalty scheme. Having done so, we discover that eigenvalues do in fact have great utility for this purpose. We demonstrate that in learning a Koopman operator for a damped driven pendulum, appropriate initialisation and regularisation can improve initial performance by an order of magnitude. We also show with this system that as the dissipative element of a dynamical system decreases, the utility of unit circle initialisation schemes increase and the utility of different regularisation schemes change. Additionally, we show that the benefits of eigenvalue initialisation and regularisation generalise to real-world cyclone wind data, sea surface temperature prediction and flow over a cylinder. View further information *here. .",
+          "url": "https://charlieoneill11.github.io/charlieoneill/pubsandtalks/",
+          "relUrl": "/pubsandtalks/",
+          "date": ""
+      }
+      
+  
+
+  
+  
+
+  
+
+  
   
 
   
@@ -71,18 +87,13 @@
   
 
   
-
-  
   
 
   
   
 
   
-  
-
-  
-      ,"page10": {
+      ,"page11": {
           "title": "",
           "content": "Sitemap: {{ “sitemap.xml” | absolute_url }} | .",
           "url": "https://charlieoneill11.github.io/charlieoneill/robots.txt",
