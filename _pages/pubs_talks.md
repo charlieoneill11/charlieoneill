@@ -6,6 +6,7 @@ permalink: /pubsandtalks/
 
 ## Publications
 * Charles O'Neill, Devinder Chauhan and Giang Do. _Predicting Real-world Visual Outcomes of Anti-VEGF Treatment for Neovascular Age-related Macular Degeneration, Using Minimal Data and No Direct Imaging Input_ (2022). Abstract accepted at Euretina 2022. Link [here](https://euretina.org/resource/abstract_2022_predicting-real-world-visual-outcomes-of-anti-vegf-treatment-for-neovascular-age-related-macular-degeneration-using-minimal-data-and-no-direct-imaging-input/).
+* **(Preprint)** Jack Miller et al. _Eigenvalue Initialisation and Regularisation for Koopman Autoencoders and Beyond_ (2022). 
 
 ## Talks
 
