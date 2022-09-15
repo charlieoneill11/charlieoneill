@@ -4,7 +4,7 @@ description: "Putting the science back in data science"
 layout: post
 toc: true
 comments: true
-hide: false
+hide: true
 search_exclude: true
 categories: [data science, python, analysis, statistics, software development]
 ---
